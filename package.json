@@ -13,10 +13,20 @@
         "axios": "^0.18",
         "bootstrap": "^4.0.0",
         "cross-env": "^5.1",
+        "imagemin-pngquant": "^6.0.0",
         "jquery": "^3.2",
         "laravel-mix": "^2.0",
         "lodash": "^4.17.5",
+        "pngquant": "^1.3.0",
+        "pngquant-bin": "^5.0.0",
         "popper.js": "^1.12",
+        "tailwindcss": "^0.6.5",
         "vue": "^2.5.7"
+    },
+    "dependencies": {
+        "ajv": "^6.5.3",
+        "imagemin": "^5.0.0",
+        "img-loader": "^3.0.0",
+        "npm": "^6.4.1"
     }
 }
