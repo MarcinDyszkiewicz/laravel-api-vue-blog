@@ -17,14 +17,17 @@
     <link href="https://fonts.googleapis.com/css?family=Nunito" rel="stylesheet" type="text/css">
 
     <!-- Styles -->
-    <link href="{{ asset('css/app.css') }}" rel="stylesheet">
+    <link href="{{ asset('css/index.css') }}" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss/dist/tailwind.min.css" rel="stylesheet">
 </head>
 <body>
+    <div id="app">
 
+        <navigation-component></navigation-component>
 
-    <div class="container">
-        @yield('content')
+        <div class="container">
+            @yield('content')
+        </div>
     </div>
-
 </body>
 </html>
