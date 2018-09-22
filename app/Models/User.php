@@ -15,7 +15,7 @@ class User extends Authenticatable implements MustVerifyEmail
     const ROLE_ADMIN = 10;
     const ROLE_SUPER_ADMIN = 100;
 
-    public static $typeMap = [
+    public static $roleMap = [
         self::ROLE_USER => 'User',
         self::ROLE_ADMIN => 'Admin',
         self::ROLE_SUPER_ADMIN => 'SuperAdmin'
