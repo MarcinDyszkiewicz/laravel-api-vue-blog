@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Post;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
@@ -41,4 +42,9 @@ class User extends Authenticatable implements MustVerifyEmail
     protected $hidden = [
         'password', 'remember_token', 'token_api',
     ];
+
+    public function posts()
+    {
+        return $this->hasMany(Post::class);
+    }
 }

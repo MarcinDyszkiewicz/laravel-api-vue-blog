@@ -13,7 +13,10 @@ class CreatePostsTable extends Migration
      */
     public function up()
     {
-        Schema::create('posts', function (Blueprint $table) {
+        Schema::create(/**
+         * @param Blueprint $table
+         */
+            'posts', function (Blueprint $table) {
             $table->increments('id');
             $table->unsignedInteger('user_id');
             $table->string('title');
@@ -24,7 +27,10 @@ class CreatePostsTable extends Migration
             $table->string('summary')->nullable();
             $table->string('slug')->nullable();
             $table->timestamps();
+
+            $table->foreign('user_id')->references('id')->on('users');
         });
+
     }
 
     /**
