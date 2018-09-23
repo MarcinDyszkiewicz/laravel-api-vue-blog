@@ -15,11 +15,15 @@ class User extends Authenticatable implements MustVerifyEmail
 
 
     const ROLE_USER = 1;
-    const ROLE_ADMIN = 10;
-    const ROLE_SUPER_ADMIN = 100;
+    const ROLE_AUTHOR = 20;
+    const ROLE_EDITOR = 40;
+    const ROLE_ADMIN = 100;
+    const ROLE_SUPER_ADMIN = 200;
 
     public static $roleMap = [
         self::ROLE_USER => 'User',
+        self::ROLE_AUTHOR => 'Author',
+        self::ROLE_EDITOR => 'Editor',
         self::ROLE_ADMIN => 'Admin',
         self::ROLE_SUPER_ADMIN => 'SuperAdmin'
     ];
@@ -46,5 +50,10 @@ class User extends Authenticatable implements MustVerifyEmail
     public function posts()
     {
         return $this->hasMany(Post::class);
+    }
+
+    public function isSuperAdmin(): bool
+    {
+        return $this->role === User::ROLE_SUPER_ADMIN;
     }
 }
