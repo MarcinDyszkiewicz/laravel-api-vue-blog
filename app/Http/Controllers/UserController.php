@@ -9,8 +9,6 @@ use phpseclib\Crypt\Hash;
 
 class UserController extends Controller
 {
-    use UserControllerHelper;
-
     private $userControllerHelper;
 
     public function __construct(UserControllerHelper $userControllerHelper)
@@ -23,13 +21,11 @@ class UserController extends Controller
      * @param Request $request
      * @return \Illuminate\Http\JsonResponse
      */
-    public function changePassword(Request $request, User $user)
+    public function update(Request $request, User $user)
     {
-        $user->name = $request->name;
-        $user->password = bcrypt($request->new_password);
-        $user->save();
+        $user = $this->userControllerHelper->updateProfile($user, $request);
 
-        return response()->json(['message' => 'user has been updated', 'data'=>$user]);
+        return response()->json(['message' => 'user has been updated', 'data' => $user]);
     }
 
     public function changeRoleAndPermission(User $user, Request $request)

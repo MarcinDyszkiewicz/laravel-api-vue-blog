@@ -33,6 +33,7 @@ Route::get('posts', 'PostController@index');
         Route::get('logout', 'AuthController@logout');
         Route::get('user', 'AuthController@user');
         Route::post('post', 'PostController@store');
+        Route::patch('user/update/{user}', 'UserController@update');
     });
 //});
 Auth::routes(['verify' => true]);
