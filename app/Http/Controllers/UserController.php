@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Helpers\UserControllerHelper;
 use App\Models\User;
 use Illuminate\Http\Request;
-use phpseclib\Crypt\Hash;
 
 class UserController extends Controller
 {
@@ -28,10 +27,17 @@ class UserController extends Controller
         return response()->json(['message' => 'user has been updated', 'data' => $user]);
     }
 
-    public function changeRoleAndPermission(User $user, Request $request)
+    public function updateRoleAndPermission(Request $request, User $user)
     {
-        $user->role = $request->role;
-        $user->save();
+        if($request->role) {
+            $user = $this->userControllerHelper->changeRole($user, $request);
+        }
+
+        if($request->permission) {
+            $user = $this->userControllerHelper->changePermission($user, $request);
+        }
+
+
     }
     protected function rules()
     {
