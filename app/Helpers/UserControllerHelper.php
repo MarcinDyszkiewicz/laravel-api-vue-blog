@@ -50,6 +50,8 @@ class UserControllerHelper
     public function changePermission(User $user, $data)
     {
         $user->pemissions->sync($data->permission);
+
+        return $user;
     }
 
 }

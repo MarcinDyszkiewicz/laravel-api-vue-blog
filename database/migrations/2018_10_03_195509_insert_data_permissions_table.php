@@ -29,6 +29,6 @@ class InsertDataPermissionsTable extends Migration
      */
     public function down()
     {
-        DB::table('Permission')->truncate();
+        DB::table('permissions')->truncate();
     }
 }
