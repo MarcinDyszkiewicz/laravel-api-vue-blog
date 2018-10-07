@@ -27,17 +27,12 @@ class UserController extends Controller
         return response()->json(['data' => $user, 'message' => 'user has been updated', 'success' => true]);
     }
 
-    public function updateRoleAndPermission(Request $request, User $user)
+    public function updateRole(Request $request, User $user)
     {
-
         //@todo walidacja role. moga byc tylko okreslone wartosci.
         try {
             if($request->role) {
-                $this->userControllerHelper->changeRole($user, $request);
-            }
-
-            if($request->permission) {
-                $this->userControllerHelper->changePermission($user, $request);
+                $role = $this->userControllerHelper->changeRole($user, $request);
             }
 
             return response()->json(['data' => $user, 'message' => 'user has been updated', 'success' => true]);
@@ -46,17 +41,16 @@ class UserController extends Controller
         }
 
     }
-    protected function rules()
+
+    public function updatePermission(Request $request, User $user)
     {
-        return [
-            'token' => 'required',
-            'email' => 'required|email',
-            'password' => 'required|confirmed|min:6',
-        ];
+        try{
+                $this->userControllerHelper->changePermission($user, $request);
+
+            return response()->json(['data' => $user, 'message' => 'user has been updated', 'success' => true]);
+        } catch (\Exception $e) {
+            return response()->json(['data' => null, 'message' => $e, 'success' => false]);
+        }
     }
 
-    protected function validationErrorMessages()
-    {
-        return [];
-    }
 }
