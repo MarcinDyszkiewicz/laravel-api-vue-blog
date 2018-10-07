@@ -15,8 +15,8 @@ class User extends Authenticatable implements MustVerifyEmail
 
 
     const ROLE_USER = 1;
-    const ROLE_AUTHOR = 20;
-    const ROLE_EDITOR = 40;
+    const ROLE_AUTHOR = 2;
+    const ROLE_EDITOR = 4;
     const ROLE_ADMIN = 100;
     const ROLE_SUPER_ADMIN = 200;
 
@@ -55,5 +55,10 @@ class User extends Authenticatable implements MustVerifyEmail
     public function isSuperAdmin(): bool
     {
         return $this->role === User::ROLE_SUPER_ADMIN;
+    }
+
+    public function permissions()
+    {
+        return $this->belongsToMany(Permission::class);
     }
 }

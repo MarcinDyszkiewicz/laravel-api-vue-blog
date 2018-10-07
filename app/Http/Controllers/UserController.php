@@ -24,19 +24,26 @@ class UserController extends Controller
     {
         $user = $this->userControllerHelper->updateProfile($user, $request);
 
-        return response()->json(['message' => 'user has been updated', 'data' => $user]);
+        return response()->json(['data' => $user, 'message' => 'user has been updated', 'success' => true]);
     }
 
     public function updateRoleAndPermission(Request $request, User $user)
     {
-        if($request->role) {
-            $user = $this->userControllerHelper->changeRole($user, $request);
-        }
 
-        if($request->permission) {
-            $user = $this->userControllerHelper->changePermission($user, $request);
-        }
+        //@todo walidacja role. moga byc tylko okreslone wartosci.
+        try {
+            if($request->role) {
+                $this->userControllerHelper->changeRole($user, $request);
+            }
 
+            if($request->permission) {
+                $this->userControllerHelper->changePermission($user, $request);
+            }
+
+            return response()->json(['data' => $user, 'message' => 'user has been updated', 'success' => true]);
+        } catch (\Exception $e) {
+            return response()->json(['data' => null, 'message' => $e, 'success' => false]);
+        }
 
     }
     protected function rules()
