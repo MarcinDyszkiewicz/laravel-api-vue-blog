@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Helpers\UserControllerHelper;
 use App\Models\User;
+use App\Rules\roles;
 use Illuminate\Http\Request;
 
 class UserController extends Controller
@@ -29,23 +30,23 @@ class UserController extends Controller
 
     public function updateRole(Request $request, User $user)
     {
-        //@todo walidacja role. moga byc tylko okreslone wartosci.
-        try {
-            if($request->role) {
-                $role = $this->userControllerHelper->changeRole($user, $request);
-            }
+        $request->validate([
+            'role' => ['required', 'int', new roles],
+        ]);
 
-            return response()->json(['data' => $user, 'message' => 'user has been updated', 'success' => true]);
+        try {
+            $this->userControllerHelper->changeRole($user, $request->role);
+
+            return response()->json(['data' => $user, 'message' => 'User\'s role has been updated to '.User::$roleMap[$request->role], 'success' => true]);
         } catch (\Exception $e) {
             return response()->json(['data' => null, 'message' => $e, 'success' => false]);
         }
-
     }
 
     public function updatePermission(Request $request, User $user)
     {
         try{
-                $this->userControllerHelper->changePermission($user, $request);
+            $this->userControllerHelper->changePermission($user, $request);
 
             return response()->json(['data' => $user, 'message' => 'user has been updated', 'success' => true]);
         } catch (\Exception $e) {

@@ -24,9 +24,9 @@ class UserControllerHelper
         return $user;
     }
 
-    public function changeRole(User $user, $data)
+    public function changeRole(User $user, $role)
     {
-        $user->role = $data->role;
+        $user->role = $role;
         $user->save();
 
         switch ($user->role){
