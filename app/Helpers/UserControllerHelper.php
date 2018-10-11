@@ -9,8 +9,6 @@ class UserControllerHelper
 {
 
     /**
-     * Updating user's own profile
-     *
      * @param User $user
      * @param $data
      * @return User
@@ -24,7 +22,12 @@ class UserControllerHelper
         return $user;
     }
 
-    public function changeRole(User $user, $role)
+    /**
+     * @param User $user
+     * @param $role
+     * @return User
+     */
+    public function changeRole(User $user, $role): User
     {
         $user->role = $role;
         $user->save();
@@ -50,9 +53,9 @@ class UserControllerHelper
         return $user;
     }
 
-    public function changePermission(User $user, $data)
+    public function changePermission(User $user, $permission): User
     {
-        $user->permissions()->sync($data->permission);
+        $user->permissions()->sync($permission);
 
         return $user;
     }

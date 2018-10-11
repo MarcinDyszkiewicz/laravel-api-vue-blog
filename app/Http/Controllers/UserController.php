@@ -17,6 +17,8 @@ class UserController extends Controller
     }
 
     /**
+     * Updates user's own profile
+     *
      * @param User $user
      * @param Request $request
      * @return \Illuminate\Http\JsonResponse
@@ -28,6 +30,13 @@ class UserController extends Controller
         return response()->json(['data' => $user, 'message' => 'user has been updated', 'success' => true]);
     }
 
+    /**
+     * Updates user's roles
+     *
+     * @param Request $request
+     * @param User $user
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function updateRole(Request $request, User $user)
     {
         $request->validate([
@@ -35,9 +44,9 @@ class UserController extends Controller
         ]);
 
         try {
-            $this->userControllerHelper->changeRole($user, $request->role);
+            $user = $this->userControllerHelper->changeRole($user, $request->role);
 
-            return response()->json(['data' => $user, 'message' => 'User\'s role has been updated to '.User::$roleMap[$request->role], 'success' => true]);
+            return response()->json(['data' => $user, 'message' => 'User\'s role has been updated to '.User::$roleMap[$user->role], 'success' => true]);
         } catch (\Exception $e) {
             return response()->json(['data' => null, 'message' => $e, 'success' => false]);
         }
@@ -45,13 +54,16 @@ class UserController extends Controller
 
     public function updatePermission(Request $request, User $user)
     {
-        try{
-            $this->userControllerHelper->changePermission($user, $request);
+        $request->validate([
+           'permission' => 'required|array|exists:permissions,id'
+        ]);
 
-            return response()->json(['data' => $user, 'message' => 'user has been updated', 'success' => true]);
+        try{
+            $user = $this->userControllerHelper->changePermission($user, $request->permission);
+
+            return response()->json(['data' => $user, 'message' => 'User\'s permissions has been updated to '.$user->permissions()->pluck('name')->implode(', '), 'success' => true]);
         } catch (\Exception $e) {
             return response()->json(['data' => null, 'message' => $e, 'success' => false]);
         }
     }
-
 }
