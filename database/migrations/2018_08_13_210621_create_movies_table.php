@@ -16,16 +16,16 @@ class CreateMoviesTable extends Migration
         Schema::create('movies', function (Blueprint $table) {
             $table->increments('id');
             $table->text('title');
-            $table->integer('year');
-            $table->date('released');
-            $table->string('runtime');
-            $table->text('plot');
-            $table->text('review');
-            $table->string('poster');
-            $table->decimal('internet_movie_database_rating');
-            $table->integer('rotten_tomatoes_rating');
-            $table->integer('metacritic_rating');
-            $table->decimal('imdb_rating');
+            $table->integer('year')->nullable();
+            $table->date('released')->nullable();
+            $table->integer('runtime')->nullable();
+            $table->text('plot')->nullable();
+            $table->text('review')->nullable();
+            $table->string('poster', 500)->nullable();
+            $table->decimal('internet_movie_database_rating')->nullable();
+            $table->integer('rotten_tomatoes_rating')->nullable();
+            $table->integer('metacritic_rating')->nullable();
+            $table->decimal('imdb_rating')->nullable();
             $table->timestamps();
         });
     }
