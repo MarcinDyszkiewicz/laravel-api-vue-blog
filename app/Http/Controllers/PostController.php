@@ -6,6 +6,7 @@ use App\Http\Resources\PostResource;
 use App\Models\Post;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use GuzzleHttp\Client;
 
 class PostController extends Controller
 {
@@ -13,9 +14,27 @@ class PostController extends Controller
      * Display a listing of the resource.
      *
      * @return \Illuminate\Http\JsonResponse|\Illuminate\Http\Resources\Json\AnonymousResourceCollection
+     * @throws \GuzzleHttp\Exception\GuzzleException
      */
     public function index()
     {
+//        $response = file_get_contents('http://www.omdbapi.com/?apikey=c9d3739b');
+        $client = new Client();
+        $response = $client->request('GET', 'http://www.omdbapi.com/?apikey=c9d3739b&', [
+            'query' => [
+                'apikey' => 'c9d3739b',
+                't' => 'batman',
+            ]
+        ]);
+//        echo $res->getStatusCode();
+//        // 200
+//        echo $res->getHeader('content-type');
+//        // 'application/json; charset=utf8'
+//        echo $res->getBody();
+
+
+        return $response->getBody();
+
         $posts = Post::with('user')->get();
 
 //        return response()->json($posts);
