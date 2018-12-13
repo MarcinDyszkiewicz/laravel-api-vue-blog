@@ -19,7 +19,7 @@ class CreatePostsTable extends Migration
             'posts', function (Blueprint $table) {
             $table->increments('id');
             $table->unsignedInteger('user_id');
-            $table->unsignedInteger('movie_id');
+            $table->unsignedInteger('movie_id')->nullable();
             $table->text('title');
             $table->longText('body');
             $table->string('image');
