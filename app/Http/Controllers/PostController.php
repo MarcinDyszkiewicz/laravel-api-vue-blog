@@ -2,21 +2,24 @@
 
 namespace App\Http\Controllers;
 
-use App\Post;
+use App\Http\Resources\PostResource;
+use App\Models\Post;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class PostController extends Controller
 {
     /**
      * Display a listing of the resource.
      *
-     * @return \Illuminate\Http\JsonResponse [json] response
+     * @return \Illuminate\Http\JsonResponse|\Illuminate\Http\Resources\Json\AnonymousResourceCollection
      */
     public function index()
     {
-        $posts = Post::all();
+        $posts = Post::with('user')->get();
 
-        return response()->json($posts);
+//        return response()->json($posts);
+        return PostResource::collection($posts)->additional(['message' => 'ok', 'success' => true]);
     }
 
     /**
