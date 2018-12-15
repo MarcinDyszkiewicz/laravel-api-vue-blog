@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Movie;
 use App\Services\MovieService;
-use GuzzleHttp\Client;
 use GuzzleHttp\Exception\GuzzleException;
 use Illuminate\Http\Request;
 
@@ -24,14 +23,7 @@ class MovieController extends Controller
      */
     public function index()
     {
-//        $GuzzleClient = new Client();
-//        $response = $GuzzleClient->request('GET', 'http://www.omdbapi.com/?apikey=c9d3739b&', [
-//            'query' => [
-//                'apikey' => 'c9d3739b',
-//                't' => 'batman',
-//            ]
-//        ]);
-
+        //
     }
 
     /**
@@ -50,36 +42,38 @@ class MovieController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param $slug
-     * @return void
-     * @throws \GuzzleHttp\Exception\GuzzleException
+     * @param Movie $movie
+     * @return Movie
      */
-    public function show(Request $request)
+    public function show(Movie $movie)
     {
-        $movie = Movie::where('slug', $slug)->first();
+        return $movie;
+    }
 
-        if (!$movie) {
-            $GuzzleClient = new Client();
-            $response = $GuzzleClient->request('GET', 'http://www.omdbapi.com/?apikey=c9d3739b&', [
-                'query' => [
-                    'apikey' => 'c9d3739b',
-                    't' => 'batman',
-                ]
-            ]);
-        }
+    /**
+     * @param Request $request
+     * @return \Psr\Http\Message\StreamInterface
+     * @throws GuzzleException
+     */
+    public function findSingle(Request $request)
+    {
+        $movie = $this->movieService->showSingleMovie($request->all());
 
+        return $movie;
     }
 
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @param  \Illuminate\Http\Request $request
+     * @param Movie $movie
+     * @return Movie
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, Movie $movie)
     {
-        //
+        $movie = $this->movieService->updateMovie($request->all(), $movie);
+
+        return $movie;
     }
 
     /**
