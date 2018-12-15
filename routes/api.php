@@ -36,6 +36,9 @@ Route::get('posts', 'PostController@index');
         Route::patch('user/{user}/update/', 'UserController@update');
         Route::post('user/{user}/update-role', 'UserController@updateRole');
         Route::post('user/{user}/update-permission', 'UserController@updatePermission');
+
+        //Movies
+        Route::apiResource('movie', 'MovieController');
     });
 //});
 Auth::routes(['verify' => true]);
