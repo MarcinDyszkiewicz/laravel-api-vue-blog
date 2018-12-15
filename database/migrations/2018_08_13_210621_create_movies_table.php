@@ -26,6 +26,7 @@ class CreateMoviesTable extends Migration
             $table->integer('rotten_tomatoes_rating')->nullable();
             $table->integer('metacritic_rating')->nullable();
             $table->decimal('imdb_rating')->nullable();
+            $table->text('slug');
             $table->timestamps();
         });
     }
