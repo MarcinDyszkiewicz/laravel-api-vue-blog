@@ -22,6 +22,7 @@ class MovieService
         $movie = $GuzzleClient->request('GET', 'http://www.omdbapi.com/?apikey=c9d3739b&', [
             'query' => [
                 'apikey' => 'c9d3739b',
+                'type' => 'movie',
                 't' => $title,
                 'y' => $year
             ]
@@ -78,6 +79,7 @@ class MovieService
             $movie = $GuzzleClient->request('GET', 'http://www.omdbapi.com/?apikey=c9d3739b&', [
                 'query' => [
                     'apikey' => 'c9d3739b',
+                    'type' => 'movie',
                     't' => $title,
                     'y' => $year
                 ]

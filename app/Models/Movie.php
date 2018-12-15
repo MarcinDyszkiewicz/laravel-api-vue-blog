@@ -2,6 +2,7 @@
 
 namespace App;
 
+use App\Models\Actor;
 use App\Models\Post;
 use Illuminate\Database\Eloquent\Model;
 
@@ -25,5 +26,10 @@ class Movie extends Model
     public function posts()
     {
         return $this->hasMany(Post::class);
+    }
+
+    public function actors()
+    {
+        return $this->belongsToMany(Actor::class);
     }
 }

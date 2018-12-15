@@ -5,8 +5,6 @@ namespace App\Http\Controllers;
 use App\Http\Resources\PostResource;
 use App\Models\Post;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
-use GuzzleHttp\Client;
 
 class PostController extends Controller
 {
@@ -14,13 +12,11 @@ class PostController extends Controller
      * Display a listing of the resource.
      *
      * @return \Illuminate\Http\JsonResponse|\Illuminate\Http\Resources\Json\AnonymousResourceCollection
-     * @throws \GuzzleHttp\Exception\GuzzleException
      */
     public function index()
     {
         $posts = Post::with('user')->get();
 
-//        return response()->json($posts);
         return PostResource::collection($posts)->additional(['message' => 'ok', 'success' => true]);
     }
 
