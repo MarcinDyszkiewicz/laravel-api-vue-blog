@@ -38,6 +38,7 @@ Route::get('posts', 'PostController@index');
         Route::post('user/{user}/update-permission', 'UserController@updatePermission');
 
         //Movies
+        Route::get('movie/search-omdb', 'MovieController@searchInOmdb');
         Route::apiResource('movie', 'MovieController');
     });
 //});

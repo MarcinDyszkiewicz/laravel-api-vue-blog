@@ -18,23 +18,6 @@ class PostController extends Controller
      */
     public function index()
     {
-//        $response = file_get_contents('http://www.omdbapi.com/?apikey=c9d3739b');
-        $client = new Client();
-        $response = $client->request('GET', 'http://www.omdbapi.com/?apikey=c9d3739b&', [
-            'query' => [
-                'apikey' => 'c9d3739b',
-                't' => 'batman',
-            ]
-        ]);
-//        echo $res->getStatusCode();
-//        // 200
-//        echo $res->getHeader('content-type');
-//        // 'application/json; charset=utf8'
-//        echo $res->getBody();
-
-
-        return $response->getBody();
-
         $posts = Post::with('user')->get();
 
 //        return response()->json($posts);

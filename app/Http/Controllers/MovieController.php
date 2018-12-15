@@ -2,10 +2,21 @@
 
 namespace App\Http\Controllers;
 
+use App\Movie;
+use App\Services\MovieService;
+use GuzzleHttp\Client;
+use GuzzleHttp\Exception\GuzzleException;
 use Illuminate\Http\Request;
 
 class MovieController extends Controller
 {
+    private $movieService;
+
+    public function __construct(MovieService $movieService)
+    {
+        $this->movieService = $movieService;
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -13,7 +24,14 @@ class MovieController extends Controller
      */
     public function index()
     {
-        //
+//        $GuzzleClient = new Client();
+//        $response = $GuzzleClient->request('GET', 'http://www.omdbapi.com/?apikey=c9d3739b&', [
+//            'query' => [
+//                'apikey' => 'c9d3739b',
+//                't' => 'batman',
+//            ]
+//        ]);
+
     }
 
     /**
@@ -24,18 +42,32 @@ class MovieController extends Controller
      */
     public function store(Request $request)
     {
+        $movie = $this->movieService->createMovie();
 
+        return $movie;
     }
 
     /**
      * Display the specified resource.
      *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @param $slug
+     * @return void
+     * @throws \GuzzleHttp\Exception\GuzzleException
      */
-    public function show($id)
+    public function show($slug)
     {
-        //
+        $movie = Movie::where('slug', $slug)->first();
+
+        if (!$movie) {
+            $GuzzleClient = new Client();
+            $response = $GuzzleClient->request('GET', 'http://www.omdbapi.com/?apikey=c9d3739b&', [
+                'query' => [
+                    'apikey' => 'c9d3739b',
+                    't' => 'batman',
+                ]
+            ]);
+        }
+
     }
 
     /**
@@ -59,5 +91,24 @@ class MovieController extends Controller
     public function destroy($id)
     {
         //
+    }
+
+    public function searchMovie()
+    {
+//        Movie::searchByTitle
+    }
+
+    /**
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse|\Psr\Http\Message\StreamInterface
+     * @throws \GuzzleHttp\Exception\GuzzleException
+     */
+    public function searchInOmdb(Request $request)
+    {
+        try {
+            return $this->movieService->findInOmdb($request->all());
+        } catch (\Exception $e) {
+            return response()->json($e->getMessage(), $e->getCode());
+        }
     }
 }
