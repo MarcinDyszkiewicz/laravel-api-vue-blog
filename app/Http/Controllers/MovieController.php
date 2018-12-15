@@ -42,7 +42,7 @@ class MovieController extends Controller
      */
     public function store(Request $request)
     {
-        $movie = $this->movieService->createMovie();
+        $movie = $this->movieService->createMovie($request->all());
 
         return $movie;
     }
@@ -54,7 +54,7 @@ class MovieController extends Controller
      * @return void
      * @throws \GuzzleHttp\Exception\GuzzleException
      */
-    public function show($slug)
+    public function show(Request $request)
     {
         $movie = Movie::where('slug', $slug)->first();
 

@@ -22,11 +22,11 @@ class CreateMoviesTable extends Migration
             $table->text('plot')->nullable();
             $table->text('review')->nullable();
             $table->string('poster', 500)->nullable();
-            $table->decimal('internet_movie_database_rating')->nullable();
-            $table->integer('rotten_tomatoes_rating')->nullable();
-            $table->integer('metacritic_rating')->nullable();
-            $table->decimal('imdb_rating')->nullable();
-            $table->text('slug');
+            $table->string('internet_movie_database_rating')->nullable();
+            $table->string('rotten_tomatoes_rating')->nullable();
+            $table->string('metacritic_rating')->nullable();
+            $table->string('imdb_rating')->nullable();
+            $table->string('slug')->unique();
             $table->timestamps();
         });
     }
