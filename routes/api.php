@@ -41,6 +41,9 @@ Route::get('posts', 'PostController@index');
         Route::get('movie/search-omdb', 'MovieController@searchInOmdb');
         Route::apiResource('movie', 'MovieController');
         Route::apiResource('director', 'DirectorController');
+
+        //Comments
+        Route::apiResource('comment', 'CommentController');
     });
 //});
 Auth::routes(['verify' => true]);
