@@ -40,6 +40,7 @@ Route::get('posts', 'PostController@index');
         //Movies
         Route::get('movie/search-omdb', 'MovieController@searchInOmdb');
         Route::apiResource('movie', 'MovieController');
+        Route::apiResource('director', 'DirectorController');
     });
 //});
 Auth::routes(['verify' => true]);

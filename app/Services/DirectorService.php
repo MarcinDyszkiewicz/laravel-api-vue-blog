@@ -2,44 +2,44 @@
 
 namespace App\Services;
 
-use App\Models\Actor;
+use App\Models\Director;
 
-class ActorService
+class DirectorService
 {
     /**
      * @param $data
      * @return mixed
      */
-    public function createActor($data)
+    public function createDirector($data)
     {
-        $actor = Actor::create([
+        $director = Director::create([
             'full_name' => array_get($data, 'fullName'),
             'poster' => array_get($data, 'poster'),
         ]);
         $movieIds = array_get($data, 'movieIds');
         if (!empty($movieIds)) {
-            $actor->movies()->attach(array_wrap($movieIds));
+            $director->movies()->attach(array_wrap($movieIds));
         }
 
-        return $actor;
+        return $director;
     }
 
     /**
      * @param $data
-     * @param Actor $actor
-     * @return Actor
+     * @param Director $director
+     * @return Director
      */
-    public function updateActor($data, Actor $actor)
+    public function updateDirector($data, Director $director)
     {
-        $actor->update([
+        $director->update([
             'full_name' => array_get($data, 'fullName'),
             'poster' => array_get($data, 'poster')
         ]);
         $movieIds = array_get($data, 'movieIds');
         if (!empty($movieIds)) {
-            $actor->movies()->sync(array_wrap($movieIds));
+            $director->movies()->sync(array_wrap($movieIds));
         }
 
-        return $actor;
+        return $director;
     }
 }

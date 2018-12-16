@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\Actor;
+use App\Models\Director;
 use App\Models\Movie;
 use Carbon\Carbon;
 use GuzzleHttp\Client;
@@ -42,7 +43,8 @@ class MovieService
         $requestMovieData = array_get($data, 'requestMovie');
         $title = array_get($requestMovieData, 'title')?? $omdbMovieData['Title'];
         $year = array_get($requestMovieData, 'year')?? $omdbMovieData['Year'];
-        $actorsNames = array_get($requestMovieData, 'Actors')?? $omdbMovieData['Actors'];
+        $actorsNames = array_get($requestMovieData, 'actors')?? $omdbMovieData['Actors'];
+        $directorsNames = array_get($requestMovieData, 'director')?? $omdbMovieData['Director'];
 
         $movie = Movie::create([
             'title' => $title,
@@ -69,6 +71,17 @@ class MovieService
             array_push($actorIds, $actor->id);
         }
         $movie->actors()->attach($actorIds);
+
+        $directorsNamesArray = explode(', ', $directorsNames);
+        $directorIds = [];
+        foreach (array_wrap($directorsNamesArray) as $directorName) {
+            $director = Director::where('full_name', $directorName)->first();
+            if (!$director) {
+                $director = Director::create(['full_name' => $directorName]);
+            }
+            array_push($directorIds, $director->id);
+        }
+        $movie->directors()->attach($directorIds);
 
         return $movie;
     }
@@ -106,6 +119,9 @@ class MovieService
     {
         $title = array_get($requestMovieData, 'title');
         $year = array_get($requestMovieData, 'year');
+        $actorsNames = array_get($requestMovieData, 'actors');
+        $directorsNames = array_get($requestMovieData, 'director');
+
         $movie->update([
             'title' => $title,
             'year' => $year,
@@ -116,6 +132,28 @@ class MovieService
             'poster' => array_get($requestMovieData, 'poster'),
             'slug' => str_slug($title.' '.$year, '-'),
         ]);
+
+        $actorsNamesArray = explode(', ', $actorsNames);
+        $actorIds = [];
+        foreach ($actorsNamesArray as $actorName) {
+            $actor = Actor::where('full_name', $actorName)->first();
+            if (!$actor) {
+                $actor = Actor::create(['full_name' => $actorName]);
+            }
+            array_push($actorIds, $actor->id);
+        }
+        $movie->actors()->sync($actorIds);
+
+        $directorsNamesArray = explode(', ', $directorsNames);
+        $directorIds = [];
+        foreach (array_wrap($directorsNamesArray) as $directorName) {
+            $director = Director::where('full_name', $directorName)->first();
+            if (!$director) {
+                $director = Director::create(['full_name' => $directorName]);
+            }
+            array_push($directorIds, $director->id);
+        }
+        $movie->directors()->sync($directorIds);
 
         return $movie;
     }
