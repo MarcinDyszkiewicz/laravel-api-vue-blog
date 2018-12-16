@@ -1,9 +1,7 @@
 <?php
 
-namespace App;
+namespace App\Models;
 
-use App\Models\Actor;
-use App\Models\Post;
 use Illuminate\Database\Eloquent\Model;
 
 class Movie extends Model
@@ -31,5 +29,10 @@ class Movie extends Model
     public function actors()
     {
         return $this->belongsToMany(Actor::class);
+    }
+
+    public function directors()
+    {
+        return $this->belongsToMany(Director::class);
     }
 }

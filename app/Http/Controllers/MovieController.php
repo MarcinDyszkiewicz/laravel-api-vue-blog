@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Movie;
+use App\Models\Movie;
 use App\Services\MovieService;
 use GuzzleHttp\Exception\GuzzleException;
 use Illuminate\Http\Request;

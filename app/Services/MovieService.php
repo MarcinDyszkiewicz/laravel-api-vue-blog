@@ -3,7 +3,7 @@
 namespace App\Services;
 
 use App\Models\Actor;
-use App\Movie;
+use App\Models\Movie;
 use Carbon\Carbon;
 use GuzzleHttp\Client;
 
@@ -60,13 +60,15 @@ class MovieService
         ]);
 
         $actorsNamesArray = explode(', ', $actorsNames);
+        $actorIds = [];
         foreach ($actorsNamesArray as $actorName) {
             $actor = Actor::where('full_name', $actorName)->first();
             if (!$actor) {
                 $actor = Actor::create(['full_name' => $actorName]);
             }
-            $movie->actors()->attach($actor->id);
+            array_push($actorIds, $actor->id);
         }
+        $movie->actors()->attach($actorIds);
 
         return $movie;
     }
@@ -96,6 +98,7 @@ class MovieService
                 ]
             ])->getBody();
         }
+
         return $movie;
     }
 
