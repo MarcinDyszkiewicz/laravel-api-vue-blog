@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Models\Actor;
 use App\Movie;
 use Carbon\Carbon;
 use GuzzleHttp\Client;
@@ -41,6 +42,7 @@ class MovieService
         $requestMovieData = array_get($data, 'requestMovie');
         $title = array_get($requestMovieData, 'title')?? $omdbMovieData['Title'];
         $year = array_get($requestMovieData, 'year')?? $omdbMovieData['Year'];
+        $actorsNames = array_get($requestMovieData, 'Actors')?? $omdbMovieData['Actors'];
 
         $movie = Movie::create([
             'title' => $title,
@@ -56,6 +58,15 @@ class MovieService
             'imdb_rating' => $omdbMovieData['imdbRating'],
             'slug' => str_slug($title.' '.$year, '-'),
         ]);
+
+        $actorsNamesArray = explode(', ', $actorsNames);
+        foreach ($actorsNamesArray as $actorName) {
+            $actor = Actor::where('full_name', $actorName)->first();
+            if (!$actor) {
+                $actor = Actor::create(['full_name' => $actorName]);
+            }
+            $movie->actors()->attach($actor->id);
+        }
 
         return $movie;
     }
