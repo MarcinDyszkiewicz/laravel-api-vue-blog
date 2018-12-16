@@ -35,4 +35,9 @@ class Movie extends Model
     {
         return $this->belongsToMany(Director::class);
     }
+
+    public function comments()
+    {
+        return $this->morphMany(Comment::class, 'commentable');
+    }
 }
