@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\Comment;
+use App\Models\Like;
 use App\Services\CommentService;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class CommentController extends Controller
@@ -70,5 +72,33 @@ class CommentController extends Controller
     public function destroy(Comment $comment)
     {
         //
+    }
+
+    /**
+     * @param Request $request
+     * @param Comment $comment
+     * @return JsonResponse
+     */
+    public function likeOrDislike(Request $request, Comment $comment)
+    {
+        $userId = auth()->id();
+        if ($request->likeType == Like::TYPE_LIKE) {
+            $like = $this->commentService->likeComment($comment, $userId);
+        } elseif ($request->likeType == Like::TYPE_DISLIKE) {
+            $like = $this->commentService->dislikeComment($comment, $userId);
+        }
+
+        return response()->json(['data' => $like, 'success' => true, 'message' => 'Ok'], JsonResponse::HTTP_OK);
+    }
+
+    /**
+     * @param Comment $comment
+     * @return JsonResponse
+     */
+    public function likesCount(Comment $comment)
+    {
+        $likesCount = $this->commentService->countCommentLikesAndDislikes($comment);
+
+        return response()->json(['data' => $likesCount, 'success' => true, 'message' => 'Ok'], JsonResponse::HTTP_OK);
     }
 }

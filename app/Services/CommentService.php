@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\Comment;
+use App\Models\Like;
 use App\Models\Movie;
 use App\Models\Post;
 
@@ -37,12 +38,81 @@ class CommentService
             abort_if(!$movie, 404, 'Movie not found');
             abort_if($movie->comments()->where('user_id', $userId)->where('body', $body)->exists(), 400, 'You Can\'t duplicate comments');
             $comment = $movie->comments()->create([
-                    'user_id' => $userId,
-                    'body' => $body,
-                    'comment_parent_id' => $commentParentId
-                ]);
+                'user_id' => $userId,
+                'body' => $body,
+                'comment_parent_id' => $commentParentId
+            ]);
         }
 
         return $comment;
+    }
+
+    /**
+     * @param Comment $comment
+     * @param $userId
+     * @return \Illuminate\Database\Eloquent\Model|\Illuminate\Database\Eloquent\Relations\HasMany|null|object
+     */
+    public function likeComment(Comment $comment, $userId)
+    {
+        $like = $comment->likes()->where('user_id', $userId)->first();
+        if ($like) {
+            if ($like->type == Like::TYPE_DISLIKE) {
+                $like->delete();
+                $like = $this->createLike($comment->id, $userId, Like::TYPE_LIKE);
+            } elseif ($like->type == Like::TYPE_LIKE) {
+                $like = $like->delete();
+            }
+        } else {
+            $like = $this->createLike($comment->id, $userId, Like::TYPE_LIKE);
+        }
+
+        return $like;
+    }
+
+    /**
+     * @param Comment $comment
+     * @param $userId
+     * @return \Illuminate\Database\Eloquent\Model|\Illuminate\Database\Eloquent\Relations\HasMany|null|object
+     */
+    public function dislikeComment(Comment $comment, $userId)
+    {
+        $like = $comment->likes()->where('user_id', $userId)->first();
+        if ($like) {
+            $like->delete();
+            if ($like->type == Like::TYPE_LIKE) {
+                $like = $this->createLike($comment->id, $userId, Like::TYPE_DISLIKE);
+            }
+        } else {
+            $like = $this->createLike($comment->id, $userId, Like::TYPE_DISLIKE);
+        }
+
+        return $like;
+    }
+
+    /**
+     * @param $commentId
+     * @param $userId
+     * @param $type
+     * @return mixed
+     */
+    private function createLike($commentId, $userId, $type)
+    {
+        return Like::create([
+            'user_id' => $userId,
+            'comment_id' => $commentId,
+            'type' => $type
+        ]);
+    }
+
+    /**
+     * @param Comment $comment
+     * @return int
+     */
+    public function countCommentLikesAndDislikes(Comment $comment)
+    {
+        $likesNumber = $comment->likes()->where('type', Like::TYPE_LIKE)->count();
+        $dislikesNumber = $comment->likes()->where('type', Like::TYPE_DISLIKE)->count();
+
+        return $likesNumber - $dislikesNumber;
     }
 }

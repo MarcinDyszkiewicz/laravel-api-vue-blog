@@ -43,6 +43,8 @@ Route::get('posts', 'PostController@index');
         Route::apiResource('director', 'DirectorController');
 
         //Comments
+        Route::post('comment/{comment}/like', 'CommentController@likeOrDislike');
+        Route::get('comment/{comment}/like-count', 'CommentController@likesCount');
         Route::apiResource('comment', 'CommentController');
     });
 //});
