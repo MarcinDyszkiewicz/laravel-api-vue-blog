@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Actor;
+use App\Models\Movie;
 use App\Services\ActorService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -79,5 +80,26 @@ class ActorController extends Controller
         } catch (\Exception $e) {
             return response()->json(['data' => null, 'message' => $e->getMessage(), 'success' => false], JsonResponse::HTTP_BAD_REQUEST);
         }
+    }
+
+    /**
+     * @param Request $request
+     * @param Actor $actor
+     * @return \Illuminate\Database\Eloquent\Model|null
+     */
+    public function rate(Request $request, Actor $actor)
+    {
+        $userId = auth()->id();
+        $rating = $this->actorService->rateActor($request->all(), $userId, $actor);
+
+        return $rating;
+    }
+
+    public function rateForMovie(Request $request, Actor $actor, Movie $movie)
+    {
+        $userId = auth()->id();
+        $rating = $this->actorService->rateActorForMovie($request->all(), $userId, $actor->id, $movie->id);
+
+        return $rating;
     }
 }

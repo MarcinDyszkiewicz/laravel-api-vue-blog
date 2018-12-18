@@ -17,6 +17,7 @@ class CreateDirectorsTable extends Migration
             $table->increments('id');
             $table->string('full_name');
             $table->string('poster')->nullable();
+//            $table->string('slug')->unique();
             $table->timestamps();
         });
     }

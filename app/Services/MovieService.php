@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Models\Actor;
 use App\Models\Director;
 use App\Models\Movie;
+use App\Models\Rating;
 use Carbon\Carbon;
 use GuzzleHttp\Client;
 
@@ -115,6 +116,11 @@ class MovieService
         return $movie;
     }
 
+    /**
+     * @param $requestMovieData
+     * @param Movie $movie
+     * @return Movie
+     */
     public function updateMovie($requestMovieData, Movie $movie)
     {
         $title = array_get($requestMovieData, 'title');
@@ -156,5 +162,25 @@ class MovieService
         $movie->directors()->sync($directorIds);
 
         return $movie;
+    }
+
+    /**
+     * @param $data
+     * @param $userId
+     * @param Movie $movie
+     * @return \Illuminate\Database\Eloquent\Model|null
+     */
+    public function rateMovie($data, $userId, Movie $movie)
+    {
+        $rate = array_get($data, 'rate');
+        $rating = null;
+        if (!$movie->rating()->where('user_id', $userId)->exists()) {
+            $rating = $movie->rating()->create([
+                'user_id' => $userId,
+                'rate' => $rate
+            ]);
+        }
+
+        return $rating;
     }
 }

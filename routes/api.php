@@ -42,6 +42,11 @@ Route::get('posts', 'PostController@index');
         Route::apiResource('movie', 'MovieController');
         Route::apiResource('director', 'DirectorController');
 
+        //Actors
+        Route::post('actor/{actor}/rate', 'ActorController@rate');
+        Route::post('actor/{actor}/movie/{movie}/rate', 'ActorController@rateForMovie');
+        Route::apiResource('actor', 'ActorController');
+
         //Comments
         Route::post('comment/{comment}/like', 'CommentController@likeOrDislike');
         Route::get('comment/{comment}/like-count', 'CommentController@likesCount');

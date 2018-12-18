@@ -105,4 +105,12 @@ class MovieController extends Controller
             return response()->json($e->getMessage(), $e->getCode());
         }
     }
+
+    public function rate(Request $request, Movie $movie)
+    {
+        $userId = auth()->id();
+        $rating = $this->movieService->rateMovie($request->all(), $userId, $movie);
+
+        return $rating;
+    }
 }

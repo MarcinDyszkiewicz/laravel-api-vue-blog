@@ -3,6 +3,8 @@
 namespace App\Services;
 
 use App\Models\Actor;
+use App\Models\ActorMovie;
+use App\Models\Movie;
 
 class ActorService
 {
@@ -42,4 +44,47 @@ class ActorService
 
         return $actor;
     }
+
+    /**
+     * @param $data
+     * @param $userId
+     * @param Actor $actor
+     * @return \Illuminate\Database\Eloquent\Model|null
+     */
+    public function rateActor($data, $userId, Actor $actor)
+    {
+        $rate = array_get($data, 'rate');
+        $rating = null;
+        if (!$actor->rating()->where('user_id', $userId)->exists()) {
+            $rating = $actor->rating()->create([
+                'user_id' => $userId,
+                'rate' => $rate
+            ]);
+        }
+
+        return $rating;
+    }
+
+    /**
+     * @param $data
+     * @param $userId
+     * @param $actorId
+     * @param $movieId
+     * @return null
+     */
+    public function rateActorForMovie($data, $userId, $actorId, $movieId)
+    {
+        $rate = array_get($data, 'rate');
+        $rating = null;
+        $actorPlayedInMovie = ActorMovie::getActorForMovie($actorId, $movieId);
+        if (!$actorPlayedInMovie->rating()->where('user_id', $userId)->exists()) {
+            $rating = $actorPlayedInMovie->rating()->create([
+                'user_id' => $userId,
+                'rate' => $rate
+            ]);
+        }
+
+        return $rating;
+    }
+
 }

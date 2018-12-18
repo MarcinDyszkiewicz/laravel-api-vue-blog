@@ -40,4 +40,9 @@ class Movie extends Model
     {
         return $this->morphMany(Comment::class, 'commentable');
     }
+
+    public function rating()
+    {
+        return $this->morphOne(Rating::class, 'ratingable');
+    }
 }

@@ -26,13 +26,11 @@ class CommentService
             $post = Post::find($postId);
             abort_if(!$post, 404, 'Post not found');
             abort_if($post->comments()->where('user_id', $userId)->where('body', $body)->exists(), 400, 'You Can\'t duplicate comments');
-//            if (!$post->comments()->where('user_id', $userId)->exists()) {
                 $comment = $post->comments()->create([
                     'user_id' => $userId,
                     'body' => $body,
                     'comment_parent_id' => $commentParentId
                 ]);
-//            }
         } elseif ($movieId) {
             $movie = Movie::find($movieId);
             abort_if(!$movie, 404, 'Movie not found');
