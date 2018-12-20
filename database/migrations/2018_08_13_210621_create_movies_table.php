@@ -28,6 +28,8 @@ class CreateMoviesTable extends Migration
             $table->string('imdb_rating')->nullable();
             $table->string('slug')->unique();
             $table->timestamps();
+
+            $table->unique(['title', 'year']);
         });
     }
 

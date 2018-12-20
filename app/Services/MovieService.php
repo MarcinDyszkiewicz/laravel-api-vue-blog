@@ -44,6 +44,7 @@ class MovieService
         $requestMovieData = array_get($data, 'requestMovie');
         $title = array_get($requestMovieData, 'title')?? $omdbMovieData['Title'];
         $year = array_get($requestMovieData, 'year')?? $omdbMovieData['Year'];
+        $genresIds = array_get($requestMovieData, 'genresIds');
         $actorsNames = array_get($requestMovieData, 'actors')?? $omdbMovieData['Actors'];
         $directorsNames = array_get($requestMovieData, 'director')?? $omdbMovieData['Director'];
 
@@ -62,6 +63,12 @@ class MovieService
             'slug' => str_slug($title.' '.$year, '-'),
         ]);
 
+        //Genres
+        if ($genresIds) {
+            $movie->genres()->sync(array_wrap($genresIds));
+        }
+
+        //Actors
         $actorsNamesArray = explode(', ', $actorsNames);
         $actorIds = [];
         foreach ($actorsNamesArray as $actorName) {
@@ -73,6 +80,7 @@ class MovieService
         }
         $movie->actors()->attach($actorIds);
 
+        //Directors
         $directorsNamesArray = explode(', ', $directorsNames);
         $directorIds = [];
         foreach (array_wrap($directorsNamesArray) as $directorName) {
@@ -125,6 +133,7 @@ class MovieService
     {
         $title = array_get($requestMovieData, 'title');
         $year = array_get($requestMovieData, 'year');
+        $genresIds = array_get($requestMovieData, 'genresIds');
         $actorsNames = array_get($requestMovieData, 'actors');
         $directorsNames = array_get($requestMovieData, 'director');
 
@@ -139,6 +148,12 @@ class MovieService
             'slug' => str_slug($title.' '.$year, '-'),
         ]);
 
+        //Genres
+        if ($genresIds) {
+            $movie->genres()->sync(array_wrap($genresIds));
+        }
+
+        //Actors
         $actorsNamesArray = explode(', ', $actorsNames);
         $actorIds = [];
         foreach ($actorsNamesArray as $actorName) {
@@ -150,6 +165,7 @@ class MovieService
         }
         $movie->actors()->sync($actorIds);
 
+        //Directors
         $directorsNamesArray = explode(', ', $directorsNames);
         $directorIds = [];
         foreach (array_wrap($directorsNamesArray) as $directorName) {

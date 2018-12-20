@@ -32,7 +32,7 @@ Route::get('posts', 'PostController@index');
     ], function() {
         Route::get('logout', 'AuthController@logout');
         Route::get('user', 'AuthController@user');
-        Route::post('post', 'PostController@store');
+        Route::apiResource('post', 'PostController');
         Route::patch('user/{user}/update/', 'UserController@update');
         Route::post('user/{user}/update-role', 'UserController@updateRole');
         Route::post('user/{user}/update-permission', 'UserController@updatePermission');
