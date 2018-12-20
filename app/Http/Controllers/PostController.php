@@ -4,10 +4,18 @@ namespace App\Http\Controllers;
 
 use App\Http\Resources\PostResource;
 use App\Models\Post;
+use App\Services\PostService;
 use Illuminate\Http\Request;
 
 class PostController extends Controller
 {
+    private $postService;
+
+    public function __construct(PostService $postService)
+    {
+        $this->postService = $postService;
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -28,11 +36,8 @@ class PostController extends Controller
      */
     public function store(Request $request)
     {
-        $post = new Post;
-        $post->title = $request->title;
-        $post->body = $request->body;
-        $post->user_id = request()->user()->id;
-        $post->save();
+        $userId = auth()->id();
+        $post = $this->postService->createPost($request->all(), $userId);
 
         return response()->json($post);
     }
@@ -40,13 +45,11 @@ class PostController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  int  $id
+     * @param Post $post
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show(Post $post)
     {
-        $post = Post::find($id);
-
         return response()->json($post);
     }
 
@@ -59,10 +62,8 @@ class PostController extends Controller
      */
     public function update(Request $request, Post $post)
     {
-        $post->title = $request->title;
-        $post->body = $request->body;
-        $post->user_id = request()->user()->id;
-        $post->save();
+        $userId = auth()->id();
+        $post = $this->postService->updatePost($request->all(), $userId, $post);
 
         return response()->json($post);
     }
@@ -75,6 +76,6 @@ class PostController extends Controller
      */
     public function destroy($id)
     {
-        Post::destroy([$id]);
+        Post::destroy(array_wrap($id));
     }
 }
