@@ -12,6 +12,7 @@ class PostService
         $slug = array_get($data, 'slug');
         $title =  array_get($data, 'title');
         $movieId = array_get($data, 'movieId');
+        $categoryIds = array_get($data, 'categoryIds', []);
         $movie = Movie::find($movieId);
         $post = Post::create([
             'user_id' => $userId,
@@ -25,9 +26,11 @@ class PostService
         ]);
 
         if ($movie) {
-            $post->movie()->associate($movieId);
+            $post->movie()->associate($movie);
             $post->save();
         }
+
+        $post->categories()->sync(array_wrap($categoryIds));
 
         return $post;
     }
@@ -37,6 +40,7 @@ class PostService
         $slug = array_get($data, 'slug');
         $title =  array_get($data, 'title');
         $movieId = array_get($data, 'movieId');
+        $categoryIds = array_get($data, 'categoryIds', []);
         if (optional($post->movie)->id != $movieId) {
             $movie = Movie::find($movieId);
         } else {
@@ -56,9 +60,11 @@ class PostService
 
         if ($movie) {
             $post->movie()->dissociate();
-            $post->movie()->associate($movieId);
+            $post->movie()->associate($movie);
             $post->save();
         }
+
+        $post->categories()->sync(array_wrap($categoryIds));
 
         return $post;
     }
