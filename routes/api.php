@@ -39,11 +39,14 @@ Route::get('posts', 'PostController@index');
 
         //Movies
         Route::get('movie/search-omdb', 'MovieController@searchInOmdb');
+        Route::post('movie/{movie}/rate', 'MovieController@rate');
+        Route::get('movie/{movie}/rating', 'MovieController@calculateRating');
         Route::apiResource('movie', 'MovieController');
         Route::apiResource('director', 'DirectorController');
 
         //Actors
         Route::post('actor/{actor}/rate', 'ActorController@rate');
+        Route::get('actor/{actor}/movie/{movie}/rating', 'ActorController@calculateForMovieRating');
         Route::post('actor/{actor}/movie/{movie}/rate', 'ActorController@rateForMovie');
         Route::apiResource('actor', 'ActorController');
 

@@ -23,8 +23,8 @@ class Actor extends Model
         return $this->belongsToMany(Movie::class);
     }
 
-    public function rating()
+    public function ratings()
     {
-        return $this->morphOne(Rating::class, 'ratingable');
+        return $this->morphMany(Rating::class, 'ratingable');
     }
 }

@@ -102,4 +102,11 @@ class ActorController extends Controller
 
         return $rating;
     }
+
+    public function calculateForMovieRating(Actor $actor, Movie $movie)
+    {
+        $averageRating = $this->actorService->calculateMovieRating($actor->id, $movie->id);
+
+        return $averageRating;
+    }
 }

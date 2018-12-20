@@ -174,13 +174,25 @@ class MovieService
     {
         $rate = array_get($data, 'rate');
         $rating = null;
-        if (!$movie->rating()->where('user_id', $userId)->exists()) {
-            $rating = $movie->rating()->create([
-                'user_id' => $userId,
-                'rate' => $rate
-            ]);
-        }
+        abort_if ($movie->ratings()->where('user_id', $userId)->exists(), 400, 'You have already rated this movie');
+//@@ todo lepiej throw niż abort_if
+        $rating = $movie->ratings()->create([
+            'user_id' => $userId,
+            'rate' => $rate
+        ]);
+
 
         return $rating;
+    }
+
+    /**
+     * @param Movie $movie
+     * @return float
+     */
+    public function calculateMovieRating(Movie $movie)
+    {
+        $ratings = $movie->ratings()->avg('rate');
+
+        return round($ratings, 2);
     }
 }

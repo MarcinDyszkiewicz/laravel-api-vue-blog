@@ -55,8 +55,8 @@ class ActorService
     {
         $rate = array_get($data, 'rate');
         $rating = null;
-        if (!$actor->rating()->where('user_id', $userId)->exists()) {
-            $rating = $actor->rating()->create([
+        if (!$actor->ratings()->where('user_id', $userId)->exists()) {
+            $rating = $actor->ratings()->create([
                 'user_id' => $userId,
                 'rate' => $rate
             ]);
@@ -77,8 +77,8 @@ class ActorService
         $rate = array_get($data, 'rate');
         $rating = null;
         $actorPlayedInMovie = ActorMovie::getActorForMovie($actorId, $movieId);
-        if (!$actorPlayedInMovie->rating()->where('user_id', $userId)->exists()) {
-            $rating = $actorPlayedInMovie->rating()->create([
+        if (!$actorPlayedInMovie->ratings()->where('user_id', $userId)->exists()) {
+            $rating = $actorPlayedInMovie->ratings()->create([
                 'user_id' => $userId,
                 'rate' => $rate
             ]);
@@ -87,4 +87,16 @@ class ActorService
         return $rating;
     }
 
+    /**
+     * @param $actorId
+     * @param $movieId
+     * @return float
+     */
+    public function calculateMovieRating($actorId, $movieId)
+    {
+        $actorPlayedInMovie = ActorMovie::getActorForMovie($actorId, $movieId);
+        $actorForMovieAvgRating = $actorPlayedInMovie->ratings()->avg('rate');
+
+        return round($actorForMovieAvgRating, 2);
+    }
 }

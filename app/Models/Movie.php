@@ -11,15 +11,15 @@ class Movie extends Model
         'internet_movie_database_rating', 'rotten_tomatoes_rating', 'metacritic_rating', 'imdb_rating', 'slug'
     ];
 
-    /**
-     * Get the route key for the model.
-     *
-     * @return string
-     */
-    public function getRouteKeyName()
-    {
-        return 'slug';
-    }
+//    /**
+//     * Get the route key for the model.
+//     *
+//     * @return string
+//     */
+//    public function getRouteKeyName()
+//    {
+//        return 'slug';
+//    }
 
     public function posts()
     {
@@ -41,8 +41,8 @@ class Movie extends Model
         return $this->morphMany(Comment::class, 'commentable');
     }
 
-    public function rating()
+    public function ratings()
     {
-        return $this->morphOne(Rating::class, 'ratingable');
+        return $this->morphMany(Rating::class, 'ratingable');
     }
 }

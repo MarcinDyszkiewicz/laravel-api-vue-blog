@@ -8,9 +8,9 @@ class ActorMovie extends Pivot
 {
 //    protected $table = '';
 
-    public function rating()
+    public function ratings()
     {
-        return $this->morphOne(Rating::class, 'ratingable');
+        return $this->morphMany(Rating::class, 'ratingable');
     }
 
     public static function getActorForMovie($actorId, $movieId)

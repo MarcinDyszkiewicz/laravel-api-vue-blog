@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Movie;
+use App\Models\Rating;
 use App\Services\MovieService;
 use GuzzleHttp\Exception\GuzzleException;
 use Illuminate\Http\Request;
@@ -112,5 +113,12 @@ class MovieController extends Controller
         $rating = $this->movieService->rateMovie($request->all(), $userId, $movie);
 
         return $rating;
+    }
+
+    public function calculateRating(Movie $movie)
+    {
+        $averageRating = $this->movieService->calculateMovieRating($movie);
+
+        return $averageRating;
     }
 }
