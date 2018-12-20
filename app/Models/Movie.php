@@ -45,4 +45,9 @@ class Movie extends Model
     {
         return $this->morphMany(Rating::class, 'ratingable');
     }
+
+    public function genres()
+    {
+        return $this->belongsToMany(Genre::class);
+    }
 }
