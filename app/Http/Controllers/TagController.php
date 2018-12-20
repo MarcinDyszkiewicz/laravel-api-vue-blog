@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Category;
+use App\Models\Tag;
 use Illuminate\Http\Request;
 
-class CategoryController extends Controller
+class TagController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -14,9 +14,9 @@ class CategoryController extends Controller
      */
     public function index()
     {
-        $categories = Category::all();
+        $tags = Tag::all();
 
-        return response()->json($categories);
+        return response()->json($tags);
     }
 
     /**
@@ -27,48 +27,48 @@ class CategoryController extends Controller
      */
     public function store(Request $request)
     {
-        $category = Category::create(['name' => $request->name]);
+        $tag = Tag::create(['name' => $request->name]);
 
-        return response()->json($category);
+        return response()->json($tag);
     }
 
     /**
      * Display the specified resource.
      *
-     * @param Category $category
+     * @param  \App\Models\Tag  $tag
      * @return \Illuminate\Http\Response
      */
-    public function show(Category $category)
+    public function show(Tag $tag)
     {
-        $category->load('posts');
-        return response()->json($category);
+        $tag->load('posts');
+        return response()->json($tag);
     }
 
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request $request
-     * @param Category $category
+     * @param  \Illuminate\Http\Request  $request
+     * @param  \App\Models\Tag  $tag
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Category $category)
+    public function update(Request $request, Tag $tag)
     {
-        $category->update(['name' => $request->name]);
+        $tag->update(['name' => $request->name]);
 
-        return response()->json($category);
+        return response()->json($tag);
     }
 
     /**
      * Remove the specified resource from storage.
      *
-     * @param Category $category
+     * @param  \App\Models\Tag  $tag
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Category $category)
+    public function destroy(Tag $tag)
     {
         try {
-            $category->delete();
-            return response()->json('Category Deleted');
+            $tag->delete();
+            return response()->json('Tag Deleted');
         } catch (\Exception $e) {
             return response()->json($e->getMessage());
         }

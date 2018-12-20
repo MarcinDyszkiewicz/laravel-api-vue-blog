@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Models\Movie;
 use App\Models\Post;
+use App\Models\Tag;
 
 class PostService
 {
@@ -13,6 +14,7 @@ class PostService
         $title =  array_get($data, 'title');
         $movieId = array_get($data, 'movieId');
         $categoryIds = array_get($data, 'categoryIds', []);
+        $tagNames = array_get($data, 'tags', []);
         $movie = Movie::find($movieId);
         $post = Post::create([
             'user_id' => $userId,
@@ -32,6 +34,15 @@ class PostService
 
         $post->categories()->sync(array_wrap($categoryIds));
 
+        if (!empty(array_wrap($tagNames))) {
+            $tagIds = [];
+            foreach ($tagNames as $tagName) {
+                $tag = Tag::firstOrCreate(['name' => $tagName]);
+                array_push($tagIds, $tag->id);
+            }
+            $post->tags()->sync($tagIds);
+        }
+
         return $post;
     }
 
@@ -41,6 +52,7 @@ class PostService
         $title =  array_get($data, 'title');
         $movieId = array_get($data, 'movieId');
         $categoryIds = array_get($data, 'categoryIds', []);
+        $tagNames = array_get($data, 'tags', []);
         if (optional($post->movie)->id != $movieId) {
             $movie = Movie::find($movieId);
         } else {
@@ -65,6 +77,15 @@ class PostService
         }
 
         $post->categories()->sync(array_wrap($categoryIds));
+
+        if (!empty(array_wrap($tagNames))) {
+            $tagIds = [];
+            foreach ($tagNames as $tagName) {
+                $tag = Tag::firstOrCreate(['name' => $tagName]);
+                array_push($tagIds, $tag->id);
+            }
+            $post->tags()->sync($tagIds);
+        }
 
         return $post;
     }
