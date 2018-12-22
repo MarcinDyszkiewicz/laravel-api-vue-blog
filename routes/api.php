@@ -62,6 +62,10 @@ Route::get('posts', 'PostController@index');
         Route::apiResource('comment', 'CommentController')->only('index', 'show');
         Route::apiResource('comment', 'CommentController')->only('store');
         Route::apiResource('comment', 'CommentController')->only('update', 'delete')->middleware('can:manage,comment');
+
+        //Genres
+        Route::apiResource('genre', 'GenreController')->only('index', 'show');
+        Route::apiResource('genre', 'GenreController')->only('store', 'update', 'delete')->middleware('can:manage,App/Model/Genre');
     });
 //});
 Auth::routes(['verify' => true]);
