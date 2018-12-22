@@ -66,6 +66,11 @@ Route::get('posts', 'PostController@index');
         //Genres
         Route::apiResource('genre', 'GenreController')->only('index', 'show');
         Route::apiResource('genre', 'GenreController')->only('store', 'update', 'delete')->middleware('can:manage,App/Model/Genre');
+
+        //Tags
+        Route::apiResource('tag', 'TagController')->only('index', 'show');
+        Route::apiResource('tag', 'TagController')->only('store', 'update', 'delete')->middleware('can:manage,App/Model/Tag');
+
     });
 //});
 Auth::routes(['verify' => true]);
