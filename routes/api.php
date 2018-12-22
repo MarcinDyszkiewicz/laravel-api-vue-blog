@@ -59,7 +59,9 @@ Route::get('posts', 'PostController@index');
         //Comments
         Route::post('comment/{comment}/like', 'CommentController@likeOrDislike');
         Route::get('comment/{comment}/like-count', 'CommentController@likesCount');
-        Route::apiResource('comment', 'CommentController');
+        Route::apiResource('comment', 'CommentController')->only('index', 'show');
+        Route::apiResource('comment', 'CommentController')->only('store');
+        Route::apiResource('comment', 'CommentController')->only('update', 'delete')->middleware('can:manage,comment');
     });
 //});
 Auth::routes(['verify' => true]);
