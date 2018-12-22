@@ -18,11 +18,11 @@ class Permission extends Model
 
     public static function getPermissionId(string $permissionName) :int
     {
-        return Permission::where('name', $permissionName)->value('id');
+        return self::where('name', $permissionName)->value('id');
     }
 
     public static function getPermissionIds(array $permissionName) :array
     {
-        return Permission::whereIn('name', $permissionName)->pluck('id')->toArray();
+        return self::whereIn('name', $permissionName)->pluck('id')->toArray();
     }
 }

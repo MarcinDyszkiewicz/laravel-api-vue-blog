@@ -32,23 +32,29 @@ Route::get('posts', 'PostController@index');
     ], function() {
         Route::get('logout', 'AuthController@logout');
         Route::get('user', 'AuthController@user');
-        Route::apiResource('post', 'PostController');
         Route::patch('user/{user}/update/', 'UserController@update');
         Route::post('user/{user}/update-role', 'UserController@updateRole');
         Route::post('user/{user}/update-permission', 'UserController@updatePermission');
+
+        //Posts
+        Route::apiResource('post', 'PostController')->only('index', 'show');
+        Route::apiResource('post', 'PostController')->only('store')->middleware('can:create,App\Models\Post');
+        Route::apiResource('post', 'PostController')->only('update', 'delete')->middleware('can:manage,post');
 
         //Movies
         Route::get('movie/search-omdb', 'MovieController@searchInOmdb');
         Route::post('movie/{movie}/rate', 'MovieController@rate');
         Route::get('movie/{movie}/rating', 'MovieController@calculateRating');
         Route::apiResource('movie', 'MovieController');
-        Route::apiResource('director', 'DirectorController');
 
         //Actors
         Route::post('actor/{actor}/rate', 'ActorController@rate');
         Route::get('actor/{actor}/movie/{movie}/rating', 'ActorController@calculateForMovieRating');
         Route::post('actor/{actor}/movie/{movie}/rate', 'ActorController@rateForMovie');
         Route::apiResource('actor', 'ActorController');
+
+        //Directors
+        Route::apiResource('director', 'DirectorController');
 
         //Comments
         Route::post('comment/{comment}/like', 'CommentController@likeOrDislike');

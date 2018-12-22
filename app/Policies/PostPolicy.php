@@ -3,7 +3,7 @@
 namespace App\Policies;
 
 use App\Models\User;
-use App\Post;
+use App\Models\Post;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
 class PostPolicy
@@ -11,15 +11,12 @@ class PostPolicy
     use HandlesAuthorization;
 
     /**
-     * Determine whether the user can view the post.
-     *
-     * @param  \App\Models\User  $user
-     * @param  \App\Post  $post
-     * @return mixed
+     * @param $user
+     * @return bool
      */
-    public function view(User $user, Post $post)
+    public function before(User $user)
     {
-        //
+        return $user->isSuperAdmin();
     }
 
     /**
@@ -30,38 +27,38 @@ class PostPolicy
      */
     public function create(User $user)
     {
-        //
+        return $user->hasPermission('Create Posts');
     }
 
     /**
      * Determine whether the user can update the post.
      *
      * @param  \App\Models\User  $user
-     * @param  \App\Post  $post
+     * @param  Post  $post
      * @return mixed
      */
     public function update(User $user, Post $post)
     {
-        //
+        return $post->user_id == $user->id || $user->hasPermission('Manage All Posts');
     }
 
     /**
      * Determine whether the user can delete the post.
      *
      * @param  \App\Models\User  $user
-     * @param  \App\Post  $post
+     * @param  Post  $post
      * @return mixed
      */
-    public function delete(User $user, Post $post)
+    public function manage(User $user, Post $post)
     {
-        //
+        return $post->user_id == $user->id || $user->hasPermission('Manage All Posts');
     }
 
     /**
      * Determine whether the user can restore the post.
      *
      * @param  \App\Models\User  $user
-     * @param  \App\Post  $post
+     * @param  Post  $post
      * @return mixed
      */
     public function restore(User $user, Post $post)
@@ -73,7 +70,7 @@ class PostPolicy
      * Determine whether the user can permanently delete the post.
      *
      * @param  \App\Models\User  $user
-     * @param  \App\Post  $post
+     * @param  Post  $post
      * @return mixed
      */
     public function forceDelete(User $user, Post $post)

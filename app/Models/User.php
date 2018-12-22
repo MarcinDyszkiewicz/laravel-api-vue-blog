@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-use App\Post;
+use App\Models\Post;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
@@ -52,13 +52,18 @@ class User extends Authenticatable implements MustVerifyEmail
         return $this->hasMany(Post::class);
     }
 
+    public function permissions()
+    {
+        return $this->belongsToMany(Permission::class);
+    }
+
     public function isSuperAdmin(): bool
     {
         return $this->role === User::ROLE_SUPER_ADMIN;
     }
 
-    public function permissions()
+    public function hasPermission(string $name): bool
     {
-        return $this->belongsToMany(Permission::class);
+        return $this->permissions()->where('name', $name)->exists();
     }
 }
