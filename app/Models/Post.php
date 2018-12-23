@@ -49,7 +49,7 @@ class Post extends Model
     }
 
     /**
-     * @return \Illuminate\Database\Eloquent\Builder[]|\Illuminate\Database\Eloquent\Collection
+     * @return \Illuminate\Database\Eloquent\Collection
      */
     public static function listForHomepage()
     {
@@ -64,14 +64,20 @@ class Post extends Model
         return $posts;
     }
 
+    /**
+     * @return \Illuminate\Database\Eloquent\Collection
+     */
     public static function listForHotCategory()
     {
         $posts = self::query()
             ->leftJoin('users as u', 'posts.user_id', '=', 'u.id')
             ->where('is_published', '=', true)
+            ->whereHas('categories', function ($query) {
+                $query->where('name', '=', 'Hot');
+            })
             ->select('posts.id as id', 'title', 'image', 'summary', 'slug', 'u.id as userId', 'u.name as userName')
             ->orderByDesc('published_at')
-            ->limit(10)
+            ->limit(5)
             ->get();
 
         return $posts;

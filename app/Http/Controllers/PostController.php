@@ -78,4 +78,11 @@ class PostController extends Controller
     {
         Post::destroy(array_wrap($id));
     }
+
+    public function listHotCategory()
+    {
+        $posts = Post::listForHotCategory();
+
+        return PostResource::collection($posts)->additional(['message' => 'ok', 'success' => true]);
+    }
 }
