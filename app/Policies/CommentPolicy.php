@@ -12,7 +12,7 @@ class CommentPolicy
 
     /**
      * @param $user
-     * @return bool
+     * @return bool|null
      */
     public function before(User $user)
     {
