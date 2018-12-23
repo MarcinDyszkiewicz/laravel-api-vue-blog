@@ -39,7 +39,8 @@ Route::get('posts', 'PostController@index');
         //Posts
         Route::apiResource('post', 'PostController')->only('index', 'show');
         Route::apiResource('post', 'PostController')->only('store')->middleware('can:create,App\Models\Post');
-        Route::apiResource('post', 'PostController')->only('update', 'delete')->middleware('can:manage,post');
+        Route::apiResource('post', 'PostController')->only('delete')->middleware('can:manage,post');
+        Route::put('post/{post}', 'PostController@update')->middleware('can:manage,post');
         Route::get('post/category/hot', 'PostController@listHotCategory');
 
         //Movies

@@ -53,9 +53,9 @@ class UserControllerHelper
         return $user;
     }
 
-    public function changePermission(User $user, $permission): User
+    public function changePermission(User $user, $permissionIds): User
     {
-        $user->permissions()->sync($permission);
+        $user->permissions()->sync(array_wrap($permissionIds));
 
         return $user;
     }

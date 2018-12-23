@@ -16,7 +16,9 @@ class PostPolicy
      */
     public function before(User $user)
     {
-        return $user->isSuperAdmin();
+        if ($user->isSuperAdmin()) {
+            return true;
+        }
     }
 
     /**
@@ -43,7 +45,7 @@ class PostPolicy
     }
 
     /**
-     * Determine whether the user can delete the post.
+     * Determine whether the user can manage the post.
      *
      * @param  \App\Models\User  $user
      * @param  Post  $post

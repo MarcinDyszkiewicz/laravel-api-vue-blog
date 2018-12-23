@@ -55,11 +55,11 @@ class UserController extends Controller
     public function updatePermission(Request $request, User $user)
     {
         $request->validate([
-           'permission' => 'required|array|exists:permissions,id'
+           'permissionIds' => 'nullable|array|exists:permissions,id'
         ]);
 
         try{
-            $user = $this->userControllerHelper->changePermission($user, $request->permission);
+            $user = $this->userControllerHelper->changePermission($user, $request->permissionIds);
 
             return response()->json(['data' => $user, 'message' => 'User\'s permissions has been updated to '.$user->permissions()->pluck('name')->implode(', '), 'success' => true]);
         } catch (\Exception $e) {
