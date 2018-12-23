@@ -23,7 +23,7 @@ class PostController extends Controller
      */
     public function index()
     {
-        $posts = Post::with('user')->get();
+        $posts = Post::listAllPublished();
 
         return PostResource::collection($posts)->additional(['message' => 'ok', 'success' => true]);
     }
