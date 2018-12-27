@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\PostCreateUpdateRequest;
 use App\Http\Resources\PostResource;
 use App\Models\Post;
 use App\Services\PostService;
@@ -31,10 +32,10 @@ class PostController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param PostCreateUpdateRequest $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(PostCreateUpdateRequest $request)
     {
         $userId = auth()->id();
         $post = $this->postService->createPost($request->all(), $userId);
@@ -56,11 +57,11 @@ class PostController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request $request
+     * @param PostCreateUpdateRequest $request
      * @param Post $post
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Post $post)
+    public function update(PostCreateUpdateRequest $request, Post $post)
     {
         $userId = auth()->id();
         $post = $this->postService->updatePost($request->all(), $userId, $post);
@@ -99,6 +100,10 @@ class PostController extends Controller
         return PostResource::collection($posts)->additional(['message' => 'ok', 'success' => true]);
     }
 
+    /**
+     * @param Post $post
+     * @return \Illuminate\Http\Resources\Json\AnonymousResourceCollection
+     */
     public function listSimilar(Post $post)
     {
         $posts = Post::listSimilar($post);

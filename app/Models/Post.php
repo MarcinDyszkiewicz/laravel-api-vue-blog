@@ -84,6 +84,10 @@ class Post extends Model
         return $posts;
     }
 
+    /**
+     * @param Post $post
+     * @return \Illuminate\Database\Eloquent\Builder[]|\Illuminate\Database\Eloquent\Collection|\Illuminate\Database\Query\Builder[]|\Illuminate\Support\Collection
+     */
     public static function listSimilar(Post $post)
     {
         $tagNames = $post->tags()->pluck('name');
