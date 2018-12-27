@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Models\Movie;
 use App\Models\Post;
 use App\Models\Tag;
+use Carbon\Carbon;
 
 class PostService
 {
@@ -12,6 +13,7 @@ class PostService
     {
         $slug = array_get($data, 'slug');
         $title =  array_get($data, 'title');
+        $published = array_get($data, 'published', false);
         $movieId = array_get($data, 'movieId');
         $categoryIds = array_get($data, 'categoryIds', []);
         $tagNames = array_get($data, 'tags', []);
@@ -24,7 +26,9 @@ class PostService
             'meta_title' => array_get($data, 'metaTitle'),
             'meta_description' => array_get($data, 'metaDescription'),
             'summary' => array_get($data, 'summary'),
-            'slug' => $slug ?? str_slug($title)
+            'slug' => $slug ?? str_slug($title),
+            'published' => $published,
+            'published_at' => $published ? Carbon::now() : null
         ]);
 
         if ($movie) {
@@ -50,6 +54,7 @@ class PostService
     {
         $slug = array_get($data, 'slug');
         $title =  array_get($data, 'title');
+        $published = array_get($data, 'published', false);
         $movieId = array_get($data, 'movieId');
         $categoryIds = array_get($data, 'categoryIds', []);
         $tagNames = array_get($data, 'tags', []);
@@ -67,7 +72,9 @@ class PostService
             'meta_title' => array_get($data, 'metaTitle'),
             'meta_description' => array_get($data, 'metaDescription'),
             'summary' => array_get($data, 'summary'),
-            'slug' => $slug ?? str_slug($title)
+            'slug' => $slug ?? str_slug($title),
+            'published' => $published,
+            'published_at' => $published ? Carbon::now() : null
         ]);
 
         if ($movie) {

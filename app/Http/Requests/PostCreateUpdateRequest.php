@@ -33,6 +33,7 @@ class PostCreateUpdateRequest extends FormRequest
             'meta_description' => 'nullable|string|min:50|max:255',
             'summary' => 'nullable|string|min:5|max:500',
             'slug' => 'nullable|string|min:5|max:600',
+            'published' => 'nullable|boolean',
             'categoryIds' => 'nullable|array',
             'categoryIds.*' => 'nullable|integer',
             'tags' => 'nullable|array',

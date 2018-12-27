@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Models\Movie;
-use App\Models\Rating;
 use App\Services\MovieService;
 use GuzzleHttp\Exception\GuzzleException;
 use Illuminate\Http\Request;

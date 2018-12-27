@@ -6,6 +6,7 @@ use App\Http\Requests\PostCreateUpdateRequest;
 use App\Http\Resources\PostResource;
 use App\Models\Post;
 use App\Services\PostService;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class PostController extends Controller
@@ -72,12 +73,18 @@ class PostController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @param Post $post
+     * @return JsonResponse
      */
-    public function destroy($id)
+    public function destroy(Post $post)
     {
-        Post::destroy(array_wrap($id));
+        try {
+            Post::destroy(array_wrap($post->id));
+
+            return response()->json(['data' => null, 'message' => 'Ok', 'success' => true ], JsonResponse::HTTP_OK);
+        } catch (\Exception $e) {
+            return response()->json(['data' => null, 'message' => $e->getMessage(), 'success' => false ], $e->getCode());
+        }
     }
 
     /**

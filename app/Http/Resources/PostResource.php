@@ -24,4 +24,12 @@ class PostResource extends JsonResource
             'userName' => $this->userName
         ];
     }
+
+    public function with($request)
+    {
+        return [
+            'message' => 'ok',
+            'success' => true
+        ];
+    }
 }
