@@ -37,7 +37,7 @@ class PostService
         if (!empty(array_wrap($tagNames))) {
             $tagIds = [];
             foreach ($tagNames as $tagName) {
-                $tag = Tag::firstOrCreate(['name' => $tagName]);
+                $tag = Tag::firstOrCreate(['name' => ucwords(strtolower($tagName))]);
                 array_push($tagIds, $tag->id);
             }
             $post->tags()->sync($tagIds);
@@ -81,7 +81,7 @@ class PostService
         if (!empty(array_wrap($tagNames))) {
             $tagIds = [];
             foreach ($tagNames as $tagName) {
-                $tag = Tag::firstOrCreate(['name' => $tagName]);
+                $tag = Tag::firstOrCreate(['name' => ucwords(strtolower($tagName))]);
                 array_push($tagIds, $tag->id);
             }
             $post->tags()->sync($tagIds);

@@ -42,6 +42,7 @@ Route::get('posts', 'PostController@index');
         Route::apiResource('post', 'PostController')->only('delete')->middleware('can:manage,post');
         Route::put('post/{post}', 'PostController@update')->middleware('can:manage,post');
         Route::get('post/category/hot', 'PostController@listHotCategory');
+        Route::get('post/{post}/similar', 'PostController@listSimilar');
 
         //Movies
         Route::get('movie/search-omdb', 'MovieController@searchInOmdb');

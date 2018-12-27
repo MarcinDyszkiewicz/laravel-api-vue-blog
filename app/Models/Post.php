@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
 
 class Post extends Model
 {
@@ -77,6 +78,28 @@ class Post extends Model
             })
             ->select('posts.id as id', 'title', 'image', 'summary', 'slug', 'u.id as userId', 'u.name as userName')
             ->orderByDesc('published_at')
+            ->limit(5)
+            ->get();
+
+        return $posts;
+    }
+
+    public static function listSimilar(Post $post)
+    {
+        $tagNames = $post->tags()->pluck('name');
+
+        $posts = self::query()
+            ->leftJoin('users as u', 'posts.user_id', '=', 'u.id')
+            ->leftJoin('post_tag as pt', 'posts.user_id', '=', 'u.id')
+            ->where('is_published', '=', true)
+            ->whereHas('tags', function ($query) use ($tagNames) {
+                $query->whereIn('name', $tagNames);
+            })
+            ->where('posts.id', '!=', $post->id)
+            ->select('posts.id as id', 'title', 'image', 'summary', 'slug', 'u.id as userId', 'u.name as userName', DB::raw('count(*) as matching_tags'))
+            ->distinct()
+            ->groupBy('posts.id', 'title', 'image', 'summary', 'slug', 'userId', 'userName')
+            ->orderByDesc('matching_tags')
             ->limit(5)
             ->get();
 

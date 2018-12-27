@@ -27,7 +27,7 @@ class TagController extends Controller
      */
     public function store(Request $request)
     {
-        $tag = Tag::create(['name' => $request->name]);
+        $tag = Tag::create(['name' => ucwords(strtolower($request->name))]);
 
         return response()->json($tag);
     }
@@ -53,7 +53,7 @@ class TagController extends Controller
      */
     public function update(Request $request, Tag $tag)
     {
-        $tag->update(['name' => $request->name]);
+        $tag->update(['name' => ucwords(strtolower($request->name))]);
 
         return response()->json($tag);
     }

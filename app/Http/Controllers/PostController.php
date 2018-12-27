@@ -79,9 +79,29 @@ class PostController extends Controller
         Post::destroy(array_wrap($id));
     }
 
+    /**
+     * @return \Illuminate\Http\Resources\Json\AnonymousResourceCollection
+     */
     public function listHotCategory()
     {
         $posts = Post::listForHotCategory();
+
+        return PostResource::collection($posts)->additional(['message' => 'ok', 'success' => true]);
+    }
+
+    /**
+     * @return \Illuminate\Http\Resources\Json\AnonymousResourceCollection
+     */
+    public function listHomepage()
+    {
+        $posts = Post::listForHomepage();
+
+        return PostResource::collection($posts)->additional(['message' => 'ok', 'success' => true]);
+    }
+
+    public function listSimilar(Post $post)
+    {
+        $posts = Post::listSimilar($post);
 
         return PostResource::collection($posts)->additional(['message' => 'ok', 'success' => true]);
     }
