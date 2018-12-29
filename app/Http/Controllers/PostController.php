@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\PostCreateUpdateRequest;
 use App\Http\Resources\PostResource;
+use App\Http\Resources\PostResourceListing;
 use App\Models\Post;
 use App\Services\PostService;
 use Illuminate\Http\JsonResponse;
@@ -27,32 +28,34 @@ class PostController extends Controller
     {
         $posts = Post::listAllPublished();
 
-        return PostResource::collection($posts)->additional(['message' => 'ok', 'success' => true]);
+        return PostResourceListing::collection($posts)->additional(['message' => 'ok', 'success' => true]);
     }
 
     /**
      * Store a newly created resource in storage.
      *
      * @param PostCreateUpdateRequest $request
-     * @return \Illuminate\Http\Response
+     * @return PostResource
      */
     public function store(PostCreateUpdateRequest $request)
     {
         $userId = auth()->id();
         $post = $this->postService->createPost($request->all(), $userId);
 
-        return response()->json($post);
+        return new PostResource($post);
     }
 
     /**
      * Display the specified resource.
      *
      * @param Post $post
-     * @return \Illuminate\Http\Response
+     * @return PostResource
      */
     public function show(Post $post)
     {
-        return response()->json($post);
+        $post->load('comments', 'tags', 'categories');
+
+        return new PostResource($post);
     }
 
     /**
@@ -60,14 +63,14 @@ class PostController extends Controller
      *
      * @param PostCreateUpdateRequest $request
      * @param Post $post
-     * @return \Illuminate\Http\Response
+     * @return PostResource
      */
     public function update(PostCreateUpdateRequest $request, Post $post)
     {
         $userId = auth()->id();
         $post = $this->postService->updatePost($request->all(), $userId, $post);
 
-        return response()->json($post);
+        return new PostResource($post);
     }
 
     /**
@@ -94,7 +97,7 @@ class PostController extends Controller
     {
         $posts = Post::listForHotCategory();
 
-        return PostResource::collection($posts)->additional(['message' => 'ok', 'success' => true]);
+        return PostResourceListing::collection($posts)->additional(['message' => 'ok', 'success' => true]);
     }
 
     /**
@@ -104,7 +107,7 @@ class PostController extends Controller
     {
         $posts = Post::listForHomepage();
 
-        return PostResource::collection($posts)->additional(['message' => 'ok', 'success' => true]);
+        return PostResourceListing::collection($posts)->additional(['message' => 'ok', 'success' => true]);
     }
 
     /**
@@ -115,6 +118,6 @@ class PostController extends Controller
     {
         $posts = Post::listSimilar($post);
 
-        return PostResource::collection($posts)->additional(['message' => 'ok', 'success' => true]);
+        return PostResourceListing::collection($posts)->additional(['message' => 'ok', 'success' => true]);
     }
 }
