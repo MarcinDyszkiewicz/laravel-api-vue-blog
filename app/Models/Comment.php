@@ -22,4 +22,9 @@ class Comment extends Model
     {
         return $this->hasMany(Like::class);
     }
+
+    public static function listForPost($postId)
+    {
+        return self::query()->where('post_id', $postId)->get();
+    }
 }

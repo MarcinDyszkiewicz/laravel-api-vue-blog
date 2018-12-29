@@ -41,6 +41,7 @@ Route::get('posts', 'PostController@index');
         Route::apiResource('post', 'PostController')->only('store')->middleware('can:create,App\Models\Post');
         Route::apiResource('post', 'PostController')->only('delete')->middleware('can:manage,post');
         Route::put('post/{post}', 'PostController@update')->middleware('can:manage,post');
+        Route::get('post/{post}/comments', 'CommentController@commentsForPost');
         Route::get('post/category/hot', 'PostController@listHotCategory');
         Route::get('post/{post}/similar', 'PostController@listSimilar');
 
@@ -49,6 +50,7 @@ Route::get('posts', 'PostController@index');
         Route::post('movie/{movie}/rate', 'MovieController@rate');
         Route::get('movie/{movie}/rating', 'MovieController@calculateRating');
         Route::apiResource('movie', 'MovieController');
+        Route::get('movie/{movie}/comments', 'CommentController@commentsForMovie');
 
         //Actors
         Route::post('actor/{actor}/rate', 'ActorController@rate');

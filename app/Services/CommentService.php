@@ -45,6 +45,32 @@ class CommentService
         return $comment;
     }
 
+
+    public function updateComment($data, $userId, Comment $comment)
+    {
+        $body = array_get($data, 'body');
+        $postId = array_get($data, 'postId');
+        $movieId = array_get($data, 'movieId');
+
+        if ($postId) {
+            $post = Post::find($postId);
+            abort_if(!$post, 404, 'Post not found');
+            abort_if($post->comments()->where('user_id', $userId)->where('body', $body)->exists(), 400, 'You Can\'t duplicate comments');
+            $comment->update([
+                'body' => $body,
+            ]);
+        } elseif ($movieId) {
+            $movie = Movie::find($movieId);
+            abort_if(!$movie, 404, 'Movie not found');
+            abort_if($movie->comments()->where('user_id', $userId)->where('body', $body)->exists(), 400, 'You Can\'t duplicate comments');
+            $comment->update([
+                'body' => $body,
+            ]);
+        }
+
+        return $comment;
+    }
+
     /**
      * @param Comment $comment
      * @param $userId
@@ -91,15 +117,17 @@ class CommentService
      * @param $commentId
      * @param $userId
      * @param $type
-     * @return mixed
+     * @return Like
      */
     private function createLike($commentId, $userId, $type)
     {
-        return Like::create([
+        $like = Like::create([
             'user_id' => $userId,
             'comment_id' => $commentId,
             'type' => $type
         ]);
+
+        return $like;
     }
 
     /**
