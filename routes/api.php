@@ -19,7 +19,7 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-Route::get('posts', 'PostController@index');
+Route::post('oauth/token', 'Laravel\Passport\Http\Controllers\AccessTokenController@issueToken')->middleware('');
 
 //Route::group([
 //    'prefix' => 'auth'
@@ -28,7 +28,7 @@ Route::get('posts', 'PostController@index');
 //    Route::post('signup', 'AuthController@signup');
 //
     Route::group([
-        'middleware' => 'auth:api'
+        'middleware' => 'auth:api',
     ], function() {
         Route::get('logout', 'AuthController@logout');
         Route::get('user', 'AuthController@user');

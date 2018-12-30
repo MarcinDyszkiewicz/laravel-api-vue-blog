@@ -95,6 +95,12 @@ class ActorController extends Controller
         return $rating;
     }
 
+    /**
+     * @param Request $request
+     * @param Actor $actor
+     * @param Movie $movie
+     * @return null
+     */
     public function rateForMovie(Request $request, Actor $actor, Movie $movie)
     {
         $userId = auth()->id();
@@ -103,6 +109,11 @@ class ActorController extends Controller
         return $rating;
     }
 
+    /**
+     * @param Actor $actor
+     * @param Movie $movie
+     * @return float
+     */
     public function calculateForMovieRating(Actor $actor, Movie $movie)
     {
         $averageRating = $this->actorService->calculateMovieRating($actor->id, $movie->id);

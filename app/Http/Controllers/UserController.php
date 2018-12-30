@@ -52,6 +52,11 @@ class UserController extends Controller
         }
     }
 
+    /**
+     * @param Request $request
+     * @param User $user
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function updatePermission(Request $request, User $user)
     {
         $request->validate([
