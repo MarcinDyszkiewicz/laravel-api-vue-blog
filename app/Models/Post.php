@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\DB;
 
 class Post extends Model
 {
-    protected $fillable = ['user_id', 'movie_id', 'title', 'body', 'image', 'meta_title', 'meta_description', 'summary', 'slug', 'is_published'];
+    protected $fillable = ['user_id', 'movie_id', 'title', 'body', 'image', 'meta_title', 'meta_description', 'summary', 'slug', 'is_published', 'published_at'];
 //@@todo dodać body skrócone
     public function user()
     {
@@ -75,6 +75,26 @@ class Post extends Model
             ->where('is_published', '=', true)
             ->whereHas('categories', function ($query) {
                 $query->where('name', '=', 'Hot');
+            })
+            ->select('posts.id as id', 'title', 'image', 'summary', 'slug', 'u.id as userId', 'u.name as userName')
+            ->orderByDesc('published_at')
+            ->limit(5)
+            ->get();
+
+        return $posts;
+    }
+
+    /**
+     * @param $categoryName
+     * @return \Illuminate\Database\Eloquent\Builder[]|\Illuminate\Database\Eloquent\Collection|\Illuminate\Database\Query\Builder[]|\Illuminate\Support\Collection
+     */
+    public static function listForCategory($categoryName)
+    {
+        $posts = self::query()
+            ->leftJoin('users as u', 'posts.user_id', '=', 'u.id')
+            ->where('is_published', '=', true)
+            ->whereHas('categories', function ($query) use ($categoryName) {
+                $query->where('name', '=', $categoryName);
             })
             ->select('posts.id as id', 'title', 'image', 'summary', 'slug', 'u.id as userId', 'u.name as userName')
             ->orderByDesc('published_at')

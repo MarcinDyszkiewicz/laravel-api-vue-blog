@@ -20,7 +20,10 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 });
 
 Route::post('oauth/token', 'Laravel\Passport\Http\Controllers\AccessTokenController@issueToken')->middleware('');
-
+//Homepage
+Route::get('post/list/homepage', 'PostController@listHomepage');
+Route::get('post/hot/category', 'PostController@listHotCategory');
+Route::get('post/category/{category_name}', 'PostController@listForCategory');
 //Route::group([
 //    'prefix' => 'auth'
 //], function () {
@@ -42,7 +45,7 @@ Route::post('oauth/token', 'Laravel\Passport\Http\Controllers\AccessTokenControl
         Route::apiResource('post', 'PostController')->only('delete')->middleware('can:manage,post');
         Route::put('post/{post}', 'PostController@update')->middleware('can:manage,post');
         Route::get('post/{post}/comments', 'CommentController@commentsForPost');
-        Route::get('post/category/hot', 'PostController@listHotCategory');
+
         Route::get('post/{post}/similar', 'PostController@listSimilar');
 
         //Movies

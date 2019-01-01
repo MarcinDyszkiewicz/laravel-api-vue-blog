@@ -101,6 +101,17 @@ class PostController extends Controller
     }
 
     /**
+     * @param $categoryName
+     * @return \Illuminate\Http\Resources\Json\AnonymousResourceCollection
+     */
+    public function listForCategory($categoryName)
+    {
+        $posts = Post::listForCategory($categoryName);
+
+        return PostResourceListing::collection($posts)->additional(['message' => 'ok', 'success' => true]);
+    }
+
+    /**
      * @return \Illuminate\Http\Resources\Json\AnonymousResourceCollection
      */
     public function listHomepage()
