@@ -15,7 +15,7 @@ class CreateMoviesTable extends Migration
     {
         Schema::create('movies', function (Blueprint $table) {
             $table->increments('id');
-            $table->text('title');
+            $table->string('title', 255);
             $table->integer('year')->nullable();
             $table->date('released')->nullable();
             $table->integer('runtime')->nullable();
@@ -30,6 +30,9 @@ class CreateMoviesTable extends Migration
             $table->timestamps();
 
             $table->unique(['title', 'year']);
+
+            $table->charset = 'utf8';
+            $table->collation = 'utf8_unicode_ci';
         });
     }
 

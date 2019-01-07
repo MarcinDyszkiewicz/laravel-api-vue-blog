@@ -14,8 +14,7 @@ class AddIsPublishedToPostsTable extends Migration
     public function up()
     {
         Schema::table('posts', function (Blueprint $table) {
-            $table->boolean('is_published')->default(true);
-            $table->date('published_at');
+
         });
     }
 

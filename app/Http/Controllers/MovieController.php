@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\MovieCreateUpdateRequest;
 use App\Models\Movie;
 use App\Services\MovieService;
 use GuzzleHttp\Exception\GuzzleException;
@@ -29,10 +30,10 @@ class MovieController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param MovieCreateUpdateRequest $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(MovieCreateUpdateRequest $request)
     {
         $movie = $this->movieService->createMovie($request->all());
 
