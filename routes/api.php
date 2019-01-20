@@ -19,7 +19,7 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-Route::post('oauth/token', 'Laravel\Passport\Http\Controllers\AccessTokenController@issueToken')->middleware('');
+//Route::post('oauth/token', 'Laravel\Passport\Http\Controllers\AccessTokenController@issueToken')->middleware('');
 //Homepage
 Route::get('post/list/homepage', 'PostController@listHomepage');
 Route::get('post/hot/category', 'PostController@listHotCategory');
@@ -29,6 +29,9 @@ Route::get('post/category/{category_name}', 'PostController@listForCategory');
 Route::apiResource('post', 'PostController')->only('index', 'show');
 Route::get('post/{post}/comments', 'CommentController@commentsForPost');
 Route::get('post/{post}/similar', 'PostController@listSimilar');
+
+//Movies
+Route::apiResource('movie', 'MovieController');
 
 //Route::group([
 //    'prefix' => 'auth'
@@ -54,7 +57,7 @@ Route::get('post/{post}/similar', 'PostController@listSimilar');
         Route::get('movie/search-omdb', 'MovieController@searchInOmdb');
         Route::post('movie/{movie}/rate', 'MovieController@rate');
         Route::get('movie/{movie}/rating', 'MovieController@calculateRating');
-        Route::apiResource('movie', 'MovieController');
+//        Route::apiResource('movie', 'MovieController');
         Route::get('movie/{movie}/comments', 'CommentController@commentsForMovie');
 
         //Actors

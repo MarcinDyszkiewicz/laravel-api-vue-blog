@@ -3,9 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\MovieCreateUpdateRequest;
+use App\Http\Resources\MovieResourceListing;
 use App\Models\Movie;
 use App\Services\MovieService;
 use GuzzleHttp\Exception\GuzzleException;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class MovieController extends Controller
@@ -20,11 +22,13 @@ class MovieController extends Controller
     /**
      * Display a listing of the resource.
      *
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\Resources\Json\AnonymousResourceCollection
      */
     public function index()
     {
-        //
+        $movies = Movie::all();
+
+        return MovieResourceListing::collection($movies)->additional(['message' => 'ok', 'success' => true]);
     }
 
     /**
@@ -35,9 +39,13 @@ class MovieController extends Controller
      */
     public function store(MovieCreateUpdateRequest $request)
     {
-        $movie = $this->movieService->createMovie($request->all());
+        try {
+            $movie = $this->movieService->createMovie($request->all());
 
-        return $movie;
+            return response()->json(['data' => $movie, 'message' => 'Movie Saved', 'success' => true ], JsonResponse::HTTP_OK);
+        } catch (\Exception $e) {
+            return response()->json(['data' => null, 'message' => $e->getMessage(), 'success' => false ], JsonResponse::HTTP_BAD_REQUEST);
+        }
     }
 
     /**

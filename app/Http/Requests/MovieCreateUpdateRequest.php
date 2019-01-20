@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class MovieCreateUpdateRequest extends FormRequest
 {
@@ -29,18 +30,17 @@ class MovieCreateUpdateRequest extends FormRequest
     public function requestMovieRules()
     {
         return [
-            'requestMovie.title' => 'required',
-            'requestMovie.year' => '',
-            'requestMovie. released' => '',
-            'runtime' => '',
-            'plot' => '',
-            'review' => '',
-            'poster' => '',
+            'title' => ['required', 'string', 'max:255', Rule::unique('movies')->where(function ($query){return $query->where('year', request('year'));})  ],
+            'year' => 'nullable|integer',
+            'released' => 'nullable|date',
+            'runtime' => 'nullable|integer',
+            'plot' => 'nullable|string|min:5',
+            'review' => 'nullable|string|min:5',
+            'poster' => 'nullable|string|max:500',
             'internet_movie_database_rating' => '',
             'rotten_tomatoes_rating' => '',
             'metacritic_rating' => '',
-            'imdb_rating' => '',
-            'slug' => '',
+            'slug' => 'required|string|max:255|unique:movies,slug',
         ];
     }
 }
