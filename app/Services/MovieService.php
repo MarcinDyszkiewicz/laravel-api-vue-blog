@@ -70,9 +70,9 @@ class MovieService
 
         //Actors
         if ($actorsNames) {
-            $actorsNamesArray = explode(', ', $actorsNames);
+//            $actorsNamesArray = explode(', ', $actorsNames);
             $actorIds = [];
-            foreach ($actorsNamesArray as $actorName) {
+            foreach ($actorsNames as $actorName) {
                 $actor = Actor::where('full_name', $actorName)->first();
                 if (!$actor) {
                     $actor = Actor::create(['full_name' => $actorName, 'slug' => str_slug($actorName, '-')]);

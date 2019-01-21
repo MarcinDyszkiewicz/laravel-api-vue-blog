@@ -33,6 +33,10 @@ Route::get('post/{post}/similar', 'PostController@listSimilar');
 //Movies
 Route::apiResource('movie', 'MovieController');
 
+//Actors
+Route::apiResource('actor', 'ActorController');
+
+
 //Route::group([
 //    'prefix' => 'auth'
 //], function () {
@@ -64,7 +68,7 @@ Route::apiResource('movie', 'MovieController');
         Route::post('actor/{actor}/rate', 'ActorController@rate');
         Route::get('actor/{actor}/movie/{movie}/rating', 'ActorController@calculateForMovieRating');
         Route::post('actor/{actor}/movie/{movie}/rate', 'ActorController@rateForMovie');
-        Route::apiResource('actor', 'ActorController');
+//        Route::apiResource('actor', 'ActorController');
 
         //Directors
         Route::apiResource('director', 'DirectorController');
