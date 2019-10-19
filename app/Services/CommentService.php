@@ -6,6 +6,7 @@ use App\Models\Comment;
 use App\Models\Like;
 use App\Models\Movie;
 use App\Models\Post;
+use Illuminate\Support\Arr;
 
 class CommentService
 {
@@ -16,10 +17,10 @@ class CommentService
      */
     public function createComment($data, $userId)
     {
-        $body = array_get($data, 'body');
-        $postId = array_get($data, 'postId');
-        $movieId = array_get($data, 'movieId');
-        $commentParentId = array_get($data, 'commentParentId');
+        $body = Arr::get($data, 'body');
+        $postId = Arr::get($data, 'postId');
+        $movieId = Arr::get($data, 'movieId');
+        $commentParentId = Arr::get($data, 'commentParentId');
         $comment = null;
 
         if ($postId) {
@@ -48,9 +49,9 @@ class CommentService
 
     public function updateComment($data, $userId, Comment $comment)
     {
-        $body = array_get($data, 'body');
-        $postId = array_get($data, 'postId');
-        $movieId = array_get($data, 'movieId');
+        $body = Arr::get($data, 'body');
+        $postId = Arr::get($data, 'postId');
+        $movieId = Arr::get($data, 'movieId');
 
         if ($postId) {
             $post = Post::find($postId);

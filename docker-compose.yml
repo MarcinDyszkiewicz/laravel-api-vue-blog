@@ -1,0 +1,62 @@
+version: '3'
+services:
+  nginx:
+    image: nginx:latest
+    working_dir: /var/www/html
+    volumes:
+      - ./docker-conf/nginx/conf/default.conf:/etc/nginx/conf.d/default.conf
+      - .:/var/www/html:delegated
+    ports:
+      - 8091:80
+    links:
+      - php
+    environment:
+      - VIRTUAL_HOST=movie-blog-api.local
+
+  php:
+    build:
+      context: ./
+      dockerfile: ./docker-conf/php/Dockerfile
+    working_dir: /var/www/html
+    expose:
+      - 9000
+    volumes:
+      - .:/var/www/html:delegated
+      - ./docker-conf/php/conf/php.ini:/usr/local/etc/php/conf.d/custom.ini
+      - ./docker-conf/php/conf/php-fpm.conf:/usr/local/etc/php-fpm.d/custom.conf
+      - ./docker-conf/php/conf/xdebug.ini:/usr/local/etc/php/conf.d/xdebug.ini
+      - /home/marcin/.ssh:/root/.ssh
+    links:
+      - database
+      - redis
+    environment:
+      XDEBUG_CONFIG: "remote_host=docker.for.mac.host.internal"
+      PHP_IDE_CONFIG: "serverName=http://pewniaczek-nba.local"
+
+  # The Database
+  database:
+    image: postgres:12.0
+    volumes:
+      - dbdata:/var/lib/postgresql
+    environment:
+      POSTGRES_USER: movie-blog
+      POSTGRES_PASSWORD: secret
+      POSTGRES_DB: movie-blog.db
+    ports:
+      - 55491:5432
+
+  nginx-proxy:
+    image: jwilder/nginx-proxy
+    ports:
+            - 8090:80
+    volumes:
+            - /var/run/docker.sock:/tmp/docker.sock:ro
+
+  redis:
+    image: redis:latest
+    ports:
+      - 6381:6379
+
+volumes:
+  dbdata:
+  php:

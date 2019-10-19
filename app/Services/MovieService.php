@@ -8,6 +8,7 @@ use App\Models\Movie;
 use App\Models\Rating;
 use Carbon\Carbon;
 use GuzzleHttp\Client;
+use Illuminate\Support\Arr;
 
 class MovieService
 {
@@ -18,8 +19,8 @@ class MovieService
      */
     public function findInOmdb($data)
     {
-        $title = array_get($data, 'title');
-        $year = array_get($data, 'year');
+        $title = Arr::get($data, 'title');
+        $year = Arr::get($data, 'year');
 
         $GuzzleClient = new Client();
         $movie = $GuzzleClient->request('GET', 'http://www.omdbapi.com/?apikey=c9d3739b&', [
@@ -41,26 +42,26 @@ class MovieService
     public function createMovie($data)
     {
         $data = ['requestMovie' => $data];
-        $omdbMovieData = array_get($data, 'omdbMovie');
-        $requestMovieData = array_get($data, 'requestMovie');
-        $title = array_get($requestMovieData, 'title')?? $omdbMovieData['Title'];
-        $year = array_get($requestMovieData, 'year')?? $omdbMovieData['Year'];
-        $genresIds = array_get($requestMovieData, 'genresIds');
-        $actorsNames = array_get($requestMovieData, 'actors')?? $omdbMovieData['Actors'];
-        $directorsNames = array_get($requestMovieData, 'director')?? $omdbMovieData['Director'];
+        $omdbMovieData = Arr::get($data, 'omdbMovie');
+        $requestMovieData = Arr::get($data, 'requestMovie');
+        $title = Arr::get($requestMovieData, 'title')?? $omdbMovieData['Title'];
+        $year = Arr::get($requestMovieData, 'year')?? $omdbMovieData['Year'];
+        $genresIds = Arr::get($requestMovieData, 'genresIds');
+        $actorsNames = Arr::get($requestMovieData, 'actors')?? $omdbMovieData['Actors'];
+        $directorsNames = Arr::get($requestMovieData, 'director')?? $omdbMovieData['Director'];
 
         $movie = Movie::create([
             'title' => $title,
             'year' => $year,
-            'released' => Carbon::createFromFormat('j M Y', array_get($requestMovieData, 'released'))?? Carbon::createFromFormat('j M Y', $omdbMovieData['Released']),
-            'runtime' => array_get($requestMovieData, 'runtime')?? substr($omdbMovieData['Runtime'], 0, strpos($omdbMovieData['Runtime'], ' min')),
-            'plot' => array_get($requestMovieData, 'plot')?? $omdbMovieData['Plot'],
-            'review' => array_get($requestMovieData, 'review'),
-            'poster' => array_get($requestMovieData, 'poster')?? $omdbMovieData['Poster'],
-            'internet_movie_database_rating' => array_get($omdbMovieData, 'Ratings.0.Value'),
-            'rotten_tomatoes_rating' => array_get($omdbMovieData, 'Ratings.1.Value'),
-            'metacritic_rating' => array_get($omdbMovieData, 'Ratings.2.Value'),
-            'slug' => array_get($requestMovieData, 'slug')?? str_slug($title.' '.$year, '-'),
+            'released' => Carbon::createFromFormat('j M Y', Arr::get($requestMovieData, 'released'))?? Carbon::createFromFormat('j M Y', $omdbMovieData['Released']),
+            'runtime' => Arr::get($requestMovieData, 'runtime')?? substr($omdbMovieData['Runtime'], 0, strpos($omdbMovieData['Runtime'], ' min')),
+            'plot' => Arr::get($requestMovieData, 'plot')?? $omdbMovieData['Plot'],
+            'review' => Arr::get($requestMovieData, 'review'),
+            'poster' => Arr::get($requestMovieData, 'poster')?? $omdbMovieData['Poster'],
+            'internet_movie_database_rating' => Arr::get($omdbMovieData, 'Ratings.0.Value'),
+            'rotten_tomatoes_rating' => Arr::get($omdbMovieData, 'Ratings.1.Value'),
+            'metacritic_rating' => Arr::get($omdbMovieData, 'Ratings.2.Value'),
+            'slug' => Arr::get($requestMovieData, 'slug')?? str_slug($title.' '.$year, '-'),
         ]);
 
         //Genres
@@ -110,8 +111,8 @@ class MovieService
      */
     public function showSingleMovie($data)
     {
-        $title = array_get($data, 'title');
-        $year = array_get($data, 'year');
+        $title = Arr::get($data, 'title');
+        $year = Arr::get($data, 'year');
         $slug = str_slug($title. ' '. $year);
         $movie = Movie::where('slug', $slug)->first();
 
@@ -137,20 +138,20 @@ class MovieService
      */
     public function updateMovie($requestMovieData, Movie $movie)
     {
-        $title = array_get($requestMovieData, 'title');
-        $year = array_get($requestMovieData, 'year');
-        $genresIds = array_get($requestMovieData, 'genresIds');
-        $actorsNames = array_get($requestMovieData, 'actors');
-        $directorsNames = array_get($requestMovieData, 'director');
+        $title = Arr::get($requestMovieData, 'title');
+        $year = Arr::get($requestMovieData, 'year');
+        $genresIds = Arr::get($requestMovieData, 'genresIds');
+        $actorsNames = Arr::get($requestMovieData, 'actors');
+        $directorsNames = Arr::get($requestMovieData, 'director');
 
         $movie->update([
             'title' => $title,
             'year' => $year,
-            'released' => array_get($requestMovieData, 'released'),
-            'runtime' => array_get($requestMovieData, 'runtime'),
-            'plot' => array_get($requestMovieData, 'plot'),
-            'review' => array_get($requestMovieData, 'review'),
-            'poster' => array_get($requestMovieData, 'poster'),
+            'released' => Arr::get($requestMovieData, 'released'),
+            'runtime' => Arr::get($requestMovieData, 'runtime'),
+            'plot' => Arr::get($requestMovieData, 'plot'),
+            'review' => Arr::get($requestMovieData, 'review'),
+            'poster' => Arr::get($requestMovieData, 'poster'),
             'slug' => str_slug($title.' '.$year, '-'),
         ]);
 
@@ -194,7 +195,7 @@ class MovieService
      */
     public function rateMovie($data, $userId, Movie $movie)
     {
-        $rate = array_get($data, 'rate');
+        $rate = Arr::get($data, 'rate');
         $rating = null;
         abort_if ($movie->ratings()->where('user_id', $userId)->exists(), 400, 'You have already rated this movie');
 //@@ todo lepiej throw niż abort_if
