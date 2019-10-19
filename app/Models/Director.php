@@ -28,7 +28,7 @@ use Illuminate\Database\Eloquent\Model;
  */
 class Director extends Model
 {
-    protected $fillable = ['full_name', 'poster'];
+    protected $fillable = ['full_name', 'poster', 'slug'];
 
     /**
      * Get the route key for the model.

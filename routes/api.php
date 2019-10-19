@@ -1,5 +1,8 @@
 <?php
 
+use App\Http\Controllers\ActorController;
+use App\Http\Controllers\Api\PostController;
+use App\Http\Controllers\DirectorController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
@@ -26,7 +29,7 @@ Route::get('post/hot/category', 'PostController@listHotCategory');
 Route::get('post/category/{category_name}', 'PostController@listForCategory');
 
 //Posts
-Route::apiResource('post', 'PostController')->only('index', 'show');
+Route::apiResource('post', PostController::class)->only('index', 'show');
 Route::get('post/{post}/comments', 'CommentController@commentsForPost');
 Route::get('post/{post}/similar', 'PostController@listSimilar');
 
@@ -34,7 +37,10 @@ Route::get('post/{post}/similar', 'PostController@listSimilar');
 Route::apiResource('movie', 'MovieController');
 
 //Actors
-Route::apiResource('actor', 'ActorController');
+Route::apiResource('actor', ActorController::class);
+
+
+Route::apiResource('director', DirectorController::class);
 
 
 //Route::group([
@@ -71,7 +77,7 @@ Route::apiResource('actor', 'ActorController');
 //        Route::apiResource('actor', 'ActorController');
 
         //Directors
-        Route::apiResource('director', 'DirectorController');
+//        Route::apiResource('director', DirectorController::class);
 
         //Comments
         Route::post('comment/{comment}/like', 'CommentController@likeOrDislike');

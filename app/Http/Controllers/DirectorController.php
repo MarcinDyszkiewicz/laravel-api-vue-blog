@@ -2,18 +2,25 @@
 
 namespace App\Http\Controllers;
 
+use App\Managers\Person\PersonManager;
 use App\Models\Director;
 use App\Services\DirectorService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Validation\ValidationException;
 
 class DirectorController extends Controller
 {
     private $directorService;
+    /**
+     * @var PersonManager
+     */
+    private $personManager;
 
-    public function __construct(DirectorService $directorService)
+    public function __construct(DirectorService $directorService, PersonManager $personManager)
     {
         $this->directorService = $directorService;
+        $this->personManager = $personManager;
     }
 
     /**
@@ -34,9 +41,15 @@ class DirectorController extends Controller
      */
     public function store(Request $request)
     {
-        $actor = $this->directorService->createDirector($request->all());
+        try {
+            $director = $this->personManager->createDirector($request->all());
 
-        return response()->json($actor);
+            return response()->json($director);
+        } catch (ValidationException $e) {
+            return response()->json($e->errorBag);
+        } catch (\Exception $e) {
+            return response()->json($e->getMessage());
+        }
     }
 
     /**

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Api;
 
 use App\Http\Requests\PostCreateUpdateRequest;
 use App\Http\Resources\PostResource;
@@ -10,7 +10,7 @@ use App\Services\PostService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
-class PostController extends Controller
+class PostController
 {
     private $postService;
 

@@ -2,19 +2,26 @@
 
 namespace App\Http\Controllers;
 
+use App\Managers\Person\PersonManager;
 use App\Models\Actor;
 use App\Models\Movie;
 use App\Services\ActorService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Validation\ValidationException;
 
 class ActorController extends Controller
 {
     private $actorService;
+    /**
+     * @var PersonManager
+     */
+    private $personManager;
 
-    public function __construct(ActorService $actorService)
+    public function __construct(ActorService $actorService, PersonManager $personManager)
     {
         $this->actorService = $actorService;
+        $this->personManager = $personManager;
     }
 
     /**
@@ -30,14 +37,20 @@ class ActorController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param \Illuminate\Http\Request $request
      * @return \Illuminate\Http\Response
      */
     public function store(Request $request)
     {
-        $actor = $this->actorService->createActor($request->all());
+        try {
+            $actor = $this->personManager->createActor($request->all());
 
-        return response()->json($actor);
+            return response()->json($actor);
+        } catch (ValidationException $e) {
+            return response()->json($e->errorBag);
+        } catch (\Exception $e) {
+            return response()->json($e);
+        }
     }
 
     /**
