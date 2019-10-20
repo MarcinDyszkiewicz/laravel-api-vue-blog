@@ -2,48 +2,69 @@
 
 namespace App\Services;
 
+use App\Factories\Person\PersonFactory;
 use App\Models\Actor;
 use App\Models\ActorMovie;
+use App\Models\Director;
 use App\Models\Movie;
+use App\Repositories\Person\PersonRepository;
+use Dotenv\Exception\ValidationException;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Arr;
 
-class ActorService
+class PersonService
 {
     /**
-     * @param $data
-     * @return mixed
+     * @param array $data
+     * @return Model
+     * @throws \Illuminate\Validation\ValidationException
      */
-    public function createActor($data)
+    public function createActor(array $data): Model
     {
-        $actor = Actor::create([
-            'full_name' => Arr::get($data, 'fullName'),
-            'poster' => Arr::get($data, 'poster'),
-        ]);
-        $movieIds = Arr::get($data, 'movieIds');
-        if (!empty($movieIds)) {
-            $actor->movies()->attach(array_wrap($movieIds));
-        }
+//        try {
+            $personFactory = new PersonRepository(new Actor(), $data);
 
-        return $actor;
+            return $personFactory->create();
+//        } catch (ValidationException $exception) {
+//            abort(400, $exception->getMessage());
+//        }
     }
 
     /**
-     * @param $data
-     * @param Actor $actor
-     * @return Actor
+     * @param array $data
+     * @return Model
+     * @throws \Illuminate\Validation\ValidationException
      */
-    public function updateActor($data, Actor $actor)
+    public function createDirector(array $data): Model
     {
-        $actor->update([
-            'full_name' => Arr::get($data, 'fullName'),
-            'poster' => Arr::get($data, 'poster')
-        ]);
-        $movieIds = Arr::get($data, 'movieIds');
-        if (!empty($movieIds)) {
-            $actor->movies()->sync(array_wrap($movieIds));
-        }
+        $personFactory = new PersonRepository(new Director(), $data);
 
-        return $actor;
+        return $personFactory->create();
+    }
+
+    /**
+     * @param Model $model
+     * @param array $data
+     * @return Model
+     * @throws \Illuminate\Validation\ValidationException
+     */
+    public function updatePerson(Model $model, array $data): Model
+    {
+        $personFactory = new PersonRepository($model, $data);
+
+        return $personFactory->update();
+    }
+
+    /**
+     * @param Model $model
+     * @return bool|null
+     * @throws \Exception
+     */
+    public function delete(Model $model): ?bool
+    {
+        $personFactory = new PersonRepository($model);
+
+        return $personFactory->delete();
     }
 
     /**

@@ -40,6 +40,9 @@ class Director extends Model
         return 'slug';
     }
 
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     */
     public function movies()
     {
         return $this->belongsToMany(Movie::class);

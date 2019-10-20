@@ -2,10 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\ActorStoreAndUpdateRequest;
 use App\Managers\Person\PersonManager;
 use App\Models\Actor;
 use App\Models\Movie;
-use App\Services\ActorService;
+use App\Services\PersonService;
+use App\Services\RatePersonService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
@@ -13,15 +15,10 @@ use Illuminate\Validation\ValidationException;
 class ActorController extends Controller
 {
     private $actorService;
-    /**
-     * @var PersonManager
-     */
-    private $personManager;
 
-    public function __construct(ActorService $actorService, PersonManager $personManager)
+    public function __construct(PersonService $actorService)
     {
         $this->actorService = $actorService;
-        $this->personManager = $personManager;
     }
 
     /**
@@ -37,26 +34,26 @@ class ActorController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param \Illuminate\Http\Request $request
+     * @param ActorStoreAndUpdateRequest $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(ActorStoreAndUpdateRequest $request)
     {
         try {
-            $actor = $this->personManager->createActor($request->all());
+            $actor = $this->actorService->createActor($request->only($request::allowedParams()));
 
             return response()->json($actor);
         } catch (ValidationException $e) {
-            return response()->json($e->errorBag);
+            return response()->json($e->errorBag, 422);
         } catch (\Exception $e) {
-            return response()->json($e);
+            return response()->json($e->getMessage());
         }
     }
 
     /**
      * Display the specified resource.
      *
-     * @param  \App\Models\Actor  $actor
+     * @param \App\Models\Actor $actor
      * @return \Illuminate\Http\Response
      */
     public function show(Actor $actor)
@@ -67,29 +64,35 @@ class ActorController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Actor  $actor
+     * @param ActorStoreAndUpdateRequest $request
+     * @param \App\Models\Actor $actor
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Actor $actor)
+    public function update(ActorStoreAndUpdateRequest $request, Actor $actor)
     {
-        $actor = $this->actorService->updateActor($request->all(), $actor);
+        try {
+            $actor = $this->actorService->updatePerson($actor, $request->only($request::allowedParams()));
 
-        return response()->json($actor);
+            return response()->json($actor);
+        } catch (ValidationException $e) {
+            return response()->json($e->errorBag);
+        } catch (\Exception $e) {
+            return response()->json($e);
+        }
     }
 
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Models\Actor $actor
+     * @param \App\Models\Actor $actor
      * @return \Illuminate\Http\Response
      * @throws \Exception
      */
     public function destroy(Actor $actor)
     {
         try {
-            $actor->delete();
-            return response()->json(['data' => null, 'message' => 'Actor Deleted', 'success' => true], JsonResponse::HTTP_OK);
+            $this->actorService->delete($actor);
+            return response()->json(['data' => null, 'message' => 'Person Deleted', 'success' => true], JsonResponse::HTTP_OK);
         } catch (\Exception $e) {
             return response()->json(['data' => null, 'message' => $e->getMessage(), 'success' => false], JsonResponse::HTTP_BAD_REQUEST);
         }
@@ -102,10 +105,15 @@ class ActorController extends Controller
      */
     public function rate(Request $request, Actor $actor)
     {
-        $userId = auth()->id();
-        $rating = $this->actorService->rateActor($request->all(), $userId, $actor);
+        try {
+            $userId = auth()->id();
+            $ratePersonService = new RatePersonService($request->input('rate'), $actor, $userId = 1);
+            $rating = $ratePersonService->ratePerson();
 
-        return $rating;
+            return response()->json(['data' => $rating, 'message' => 'Person Rated', 'success' => true], JsonResponse::HTTP_OK);
+        } catch (\Exception $e) {
+            return response()->json(['data' => null, 'message' => $e->getMessage(), 'success' => false], JsonResponse::HTTP_BAD_REQUEST);
+        }
     }
 
     /**
@@ -116,10 +124,15 @@ class ActorController extends Controller
      */
     public function rateForMovie(Request $request, Actor $actor, Movie $movie)
     {
-        $userId = auth()->id();
-        $rating = $this->actorService->rateActorForMovie($request->all(), $userId, $actor->id, $movie->id);
+        try {
+            $userId = auth()->id();
+            $ratePersonService = new RatePersonService($request->input('rate'), $actor, $userId = 1);
+            $rating = $ratePersonService->rateActorForMovie($movie->id);
 
-        return $rating;
+            return response()->json(['data' => $rating, 'message' => 'Person Rated', 'success' => true], JsonResponse::HTTP_OK);
+        } catch (\Exception $e) {
+            return response()->json(['data' => null, 'message' => $e->getMessage(), 'success' => false], JsonResponse::HTTP_BAD_REQUEST);
+        }
     }
 
     /**

@@ -33,7 +33,12 @@ class ActorMovie extends Pivot
         return $this->morphMany(Rating::class, 'ratingable');
     }
 
-    public static function getActorForMovie($actorId, $movieId)
+    /**
+     * @param int $actorId
+     * @param int $movieId
+     * @return ActorMovie|\Illuminate\Database\Eloquent\Builder|\Illuminate\Database\Eloquent\Model|object|null
+     */
+    public static function getActorForMovie(int $actorId, int $movieId)
     {
         return self::query()->where('actor_id', $actorId)->where('movie_id', $movieId)->first();
     }

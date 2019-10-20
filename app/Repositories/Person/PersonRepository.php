@@ -1,30 +1,15 @@
 <?php
 
-namespace App\Factories\Person;
+namespace App\Repositories\Person;
 
+use App\Repositories\BaseRepository;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Arr;
-use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
 
-class PersonFactory implements PersonFactoryContract
+class PersonRepository extends BaseRepository
 {
-    /**
-     * @var Model
-     */
-    private $model;
-    /**
-     * @var array
-     */
-    private $parameters;
-
-    public function __construct(Model $model, array $parameters)
-    {
-        $this->model = $model;
-        $this->parameters = $parameters;
-    }
-
     /**
      * @return Model
      * @throws ValidationException
@@ -55,6 +40,15 @@ class PersonFactory implements PersonFactoryContract
         return $this->model;
     }
 
+    /**
+     * @return bool|null
+     * @throws \Exception
+     */
+    public function delete(): ?bool
+    {
+        return $this->model->delete();
+    }
+
     public function attachToMovie(): void
     {
         if (isset($this->parameters['movie_ids'])) {
@@ -62,32 +56,10 @@ class PersonFactory implements PersonFactoryContract
         }
     }
 
-    private function syncWithMovie(): void
-    {
-        if (isset($this->parameters['movie_ids'])) {
-            $this->model->movies()->sync($this->parameters['movie_ids']);
-        }
-    }
-
-    /**
-     * @return bool
-     * @throws ValidationException
-     */
-    public function validate(): bool
-    {
-        $validator = Validator::make($this->parameters, self::validationRules());
-
-        if ($validator->fails()) {
-            throw new ValidationException($validator, $validator->getMessageBag(), $validator->errors());
-        }
-
-        return true;
-    }
-
     /**
      * @return array
      */
-    private function parseParameters(): array
+    protected function parseParameters(): array
     {
         $fullName = Arr::get($this->parameters, 'full_name');
         $slug = Arr::get($this->parameters, 'slug');
@@ -101,13 +73,22 @@ class PersonFactory implements PersonFactoryContract
     /**
      * @return array
      */
-    private static function validationRules(): array
+    protected function validationRules(): array
     {
+        $modelTable = $this->model->getTable();
         return [
-            'full_name' => 'required|string|regex:/(?=^.{5,50}$)^[a-zA-Z-]+\s[a-zA-Z-]+$/',
+            'full_name' =>
+                "required|string|unique:{$modelTable},full_name|regex:/(?=^.{5,50}$)^[a-zA-Z-]+\s[a-zA-Z-]+$/",
             'poster' => 'nullable|string|url',
             'movie_ids' => 'array',
             'movie_ids.*' => 'nullable|integer|exists:movies,id'
         ];
+    }
+
+    private function syncWithMovie(): void
+    {
+        if (isset($this->parameters['movie_ids'])) {
+            $this->model->movies()->sync($this->parameters['movie_ids']);
+        }
     }
 }

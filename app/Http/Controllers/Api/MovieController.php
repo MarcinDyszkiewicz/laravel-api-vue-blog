@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Api;
 
 use App\Http\Requests\MovieCreateUpdateRequest;
 use App\Http\Resources\MovieResourceListing;
@@ -10,7 +10,7 @@ use GuzzleHttp\Exception\GuzzleException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
-class MovieController extends Controller
+class MovieController
 {
     private $movieService;
 

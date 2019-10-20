@@ -87,7 +87,7 @@ class DirectorController extends Controller
     {
         try {
             $director->delete();
-            return response()->json(['data' => null, 'message' => 'Actor Deleted', 'success' => true], JsonResponse::HTTP_OK);
+            return response()->json(['data' => null, 'message' => 'Person Deleted', 'success' => true], JsonResponse::HTTP_OK);
         } catch (\Exception $e) {
             return response()->json(['data' => null, 'message' => $e->getMessage(), 'success' => false], JsonResponse::HTTP_BAD_REQUEST);
         }

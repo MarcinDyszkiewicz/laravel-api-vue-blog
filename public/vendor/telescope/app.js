@@ -2267,7 +2267,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             return _.filter(this.batch, { type: 'notification' });
         },
         tabs: function tabs() {
-            return _.filter([{ title: "Exceptions", type: "exceptions", count: this.exceptions.length }, { title: "Logs", type: "logs", count: this.logs.length }, { title: "Queries", type: "queries", count: this.queries.length }, { title: "Models", type: "models", count: this.models.length }, { title: "Gates", type: "gates", count: this.gates.length }, { title: "Jobs", type: "jobs", count: this.jobs.length }, { title: "Mail", type: "mails", count: this.mails.length }, { title: "Notifications", type: "notifications", count: this.notifications.length }, { title: "Events", type: "events", count: this.events.length }, { title: "Cache", type: "cache", count: this.cache.length }, { title: "Redis", type: "redis", count: this.redis.length }], function (tab) {
+            return _.filter([{ title: "Responses", type: "exceptions", count: this.exceptions.length }, { title: "Logs", type: "logs", count: this.logs.length }, { title: "Queries", type: "queries", count: this.queries.length }, { title: "Models", type: "models", count: this.models.length }, { title: "Gates", type: "gates", count: this.gates.length }, { title: "Jobs", type: "jobs", count: this.jobs.length }, { title: "Mail", type: "mails", count: this.mails.length }, { title: "Notifications", type: "notifications", count: this.notifications.length }, { title: "Events", type: "events", count: this.events.length }, { title: "Cache", type: "cache", count: this.cache.length }, { title: "Redis", type: "redis", count: this.redis.length }], function (tab) {
                 return tab.count > 0;
             });
         },
@@ -53758,7 +53758,7 @@ var render = function() {
   return _c(
     "index-screen",
     {
-      attrs: { title: "Exceptions", resource: "exceptions" },
+      attrs: { title: "Responses", resource: "exceptions" },
       scopedSlots: _vm._u([
         {
           key: "row",

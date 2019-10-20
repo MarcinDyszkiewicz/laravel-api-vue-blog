@@ -37,4 +37,17 @@ class PersonManager
 
         return $personFactory->create();
     }
+
+    /**
+     * @param Model $model
+     * @param array $data
+     * @return Model
+     * @throws \Illuminate\Validation\ValidationException
+     */
+    public function updatePerson(Model $model, array $data): Model
+    {
+        $personFactory = new PersonFactory($model, $data);
+
+        return $personFactory->update();
+    }
 }
