@@ -12,7 +12,7 @@ use Illuminate\Http\Request;
 
 class PostController
 {
-    private $postService;
+    private PostService $postService;
 
     public function __construct(PostService $postService)
     {
@@ -84,9 +84,17 @@ class PostController
         try {
             Post::destroy(array_wrap($post->id));
 
-            return response()->json(['data' => null, 'message' => 'Ok', 'success' => true ], JsonResponse::HTTP_OK);
+            return response()->json([
+                'data' => null,
+                'message' => 'Ok',
+                'success' => true
+            ], JsonResponse::HTTP_OK);
         } catch (\Exception $e) {
-            return response()->json(['data' => null, 'message' => $e->getMessage(), 'success' => false ], $e->getCode());
+            return response()->json([
+                'data' => null,
+                'message' => $e->getMessage(),
+                'success' => false
+            ], $e->getCode());
         }
     }
 

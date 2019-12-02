@@ -33,7 +33,7 @@ class PersonRepository extends BaseRepository
     {
         $this->validate();
 
-        $this->model = $this->model->update($this->parseParameters());
+        $this->model->update($this->parseParameters());
 
         $this->syncWithMovie();
 

@@ -11,11 +11,11 @@ abstract class BaseRepository implements BaseRepositoryInterface
     /**
      * @var Model
      */
-    protected $model;
+    protected Model $model;
     /**
      * @var array
      */
-    protected $parameters;
+    protected array $parameters;
 
     public function __construct(Model $model, array $parameters = [])
     {

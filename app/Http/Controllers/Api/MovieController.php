@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Requests\MovieCreateUpdateRequest;
+use App\Http\Requests\MovieIndexRequest;
 use App\Http\Resources\MovieResourceListing;
 use App\Models\Movie;
 use App\Services\MovieService;
@@ -12,8 +13,12 @@ use Illuminate\Http\Request;
 
 class MovieController
 {
-    private $movieService;
+    private MovieService $movieService;
 
+    /**
+     * MovieController constructor.
+     * @param MovieService $movieService
+     */
     public function __construct(MovieService $movieService)
     {
         $this->movieService = $movieService;
@@ -24,7 +29,7 @@ class MovieController
      *
      * @return \Illuminate\Http\Resources\Json\AnonymousResourceCollection
      */
-    public function index()
+    public function index(MovieIndexRequest $request)
     {
         $movies = Movie::all();
 
