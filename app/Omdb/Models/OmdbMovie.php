@@ -7,37 +7,32 @@ use Illuminate\Support\Arr;
 
 class OmdbMovie
 {
-    /**
-     * @var array
-     */
-    private array $data;
-    private string $title;
-    private string $year;
-    private string $rated;
-    private \DateTime $released;
-    private string $runtime;
-    private string $genre;
-    private array $directors;
-    private array $writers;
-    private array $actors;
-    private string $plot;
-    private array $languages;
-    private array $countrys;
-    private string $awards;
-    private string $poster;
-    private string $ratings;
-    private string $metascore;
-    private string $imdbRating;
-    private string $imdbVotes;
-    private string $imdbId;
-    private string $type;
-    private \DateTime $dvd;
-    private string $boxOffice;
-    private string $production;
+    public string $title;
+    public string $year;
+    public string $rated;
+    public \DateTime $released;
+    public string $runtime;
+    public string $genre;
+    public array $directors;
+    public array $writers;
+    public array $actors;
+    public string $plot;
+    public array $languages;
+    public array $countrys;
+    public string $awards;
+    public string $poster;
+    public array $ratings;
+    public string $metascore;
+    public string $imdbRating;
+    public string $imdbVotes;
+    public string $imdbId;
+    public string $type;
+    public \DateTime $dvd;
+    public string $boxOffice;
+    public string $production;
 
     public function __construct(array $data)
     {
-        $this->data = $data;
         $this->title = Arr::get($data, 'Title');
         $this->year = Arr::get($data, 'Year');
         $this->rated = Arr::get($data, 'Rated');
@@ -80,5 +75,13 @@ class OmdbMovie
     private function parseToCarbonDateTime(?string $string): Carbon
     {
         return Carbon::createFromFormat('j M Y', $string);
+    }
+
+    /**
+     * @return array
+     */
+    public function toArray(): array
+    {
+        return get_object_vars($this);
     }
 }

@@ -4,8 +4,11 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Requests\MovieCreateUpdateRequest;
 use App\Http\Requests\MovieIndexRequest;
+use App\Http\Requests\MovieSearchRequest;
+use App\Http\Requests\MovieSearchRequestold;
 use App\Http\Resources\MovieResourceListing;
 use App\Models\Movie;
+use App\Omdb\Omdb;
 use App\Services\MovieService;
 use GuzzleHttp\Exception\GuzzleException;
 use Illuminate\Http\JsonResponse;
@@ -27,13 +30,41 @@ class MovieController
     /**
      * Display a listing of the resource.
      *
-     * @return \Illuminate\Http\Resources\Json\AnonymousResourceCollection
+     * @param MovieIndexRequest $request
+     * @return MovieResourceListing
      */
     public function index(MovieIndexRequest $request)
     {
-        $movies = Movie::all();
+        $movies = Movie::index($request->onlyAllowedParams());
 
-        return MovieResourceListing::collection($movies)->additional(['message' => 'ok', 'success' => true]);
+        return MovieResourceListing::make($movies)->additional(['message' => 'ok', 'success' => true]);
+    }
+
+    /**
+     * @param MovieSearchRequest $request
+     * @param Omdb $omdb
+     * @return MovieResourceListing
+     */
+    public function search(MovieSearchRequest $request, Omdb $omdb)
+    {
+        $allowedParams = $request->onlyAllowedParams();
+        $dbMovies = Movie::search($allowedParams)->toArray();
+        $omdbMovies = $omdb->search($allowedParams);
+        $movies = array_merge($dbMovies, $omdbMovies);
+
+        return MovieResourceListing::make($movies)->additional(['message' => 'ok', 'success' => true]);
+    }
+
+    /**
+     * @param  Request  $request
+     * @param  Omdb  $omdb
+     * @return JsonResponse
+     */
+    public function getFromOmdb(Request $request, Omdb $omdb)
+    {
+        $movie =  $omdb->findById($request->input('omdb_id'));
+
+        return response()->json($movie, JsonResponse::HTTP_OK);
     }
 
     /**
@@ -54,14 +85,32 @@ class MovieController
     }
 
     /**
+     * Store a newly created resource in storage.
+     *
+     * @param MovieCreateUpdateRequest $request
+     * @return \Illuminate\Http\Response
+     */
+    public function storeFromOmdb(Request $request, Omdb $omdb)
+    {
+//        try {
+            $omdbMovie =  $omdb->findById($request->input('omdb_id'));
+            $movie = $this->movieService->createMovie($omdbMovie->toArray());
+
+            return response()->json(['data' => $movie, 'message' => 'Movie Saved', 'success' => true ], JsonResponse::HTTP_OK);
+//        } catch (\Exception $e) {
+//            return response()->json(['data' => null, 'message' => $e->getMessage(), 'success' => false ], JsonResponse::HTTP_BAD_REQUEST);
+//        }
+    }
+
+    /**
      * Display the specified resource.
      *
      * @param Movie $movie
-     * @return Movie
+     * @return JsonResponse
      */
     public function show(Movie $movie)
     {
-        return $movie;
+        return response()->json(['data' => $movie], JsonResponse::HTTP_OK);
     }
 
     /**

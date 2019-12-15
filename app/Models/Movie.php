@@ -2,7 +2,12 @@
 
 namespace App\Models;
 
+use Barryvdh\LaravelIdeHelper\Eloquent;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Arr;
+use Illuminate\Support\Carbon;
 
 /**
  * App\Models\Movie
@@ -20,45 +25,55 @@ use Illuminate\Database\Eloquent\Model;
  * @property string|null $metacritic_rating
  * @property string|null $imdb_rating
  * @property string $slug
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Actor[] $actors
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property-read Collection|Actor[] $actors
  * @property-read int|null $actors_count
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Comment[] $comments
+ * @property-read Collection|Comment[] $comments
  * @property-read int|null $comments_count
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Director[] $directors
+ * @property-read Collection|Director[] $directors
  * @property-read int|null $directors_count
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Genre[] $genres
+ * @property-read Collection|Genre[] $genres
  * @property-read int|null $genres_count
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Post[] $posts
+ * @property-read Collection|Post[] $posts
  * @property-read int|null $posts_count
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Rating[] $ratings
+ * @property-read Collection|Rating[] $ratings
  * @property-read int|null $ratings_count
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Movie newModelQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Movie newQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Movie query()
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Movie whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Movie whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Movie whereImdbRating($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Movie whereInternetMovieDatabaseRating($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Movie whereMetacriticRating($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Movie wherePlot($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Movie wherePoster($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Movie whereReleased($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Movie whereReview($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Movie whereRottenTomatoesRating($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Movie whereRuntime($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Movie whereSlug($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Movie whereTitle($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Movie whereUpdatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Models\Movie whereYear($value)
- * @mixin \Eloquent
+ * @method static Builder|Movie newModelQuery()
+ * @method static Builder|Movie newQuery()
+ * @method static Builder|Movie query()
+ * @method static Builder|Movie whereCreatedAt($value)
+ * @method static Builder|Movie whereId($value)
+ * @method static Builder|Movie whereImdbRating($value)
+ * @method static Builder|Movie whereInternetMovieDatabaseRating($value)
+ * @method static Builder|Movie whereMetacriticRating($value)
+ * @method static Builder|Movie wherePlot($value)
+ * @method static Builder|Movie wherePoster($value)
+ * @method static Builder|Movie whereReleased($value)
+ * @method static Builder|Movie whereReview($value)
+ * @method static Builder|Movie whereRottenTomatoesRating($value)
+ * @method static Builder|Movie whereRuntime($value)
+ * @method static Builder|Movie whereSlug($value)
+ * @method static Builder|Movie whereTitle($value)
+ * @method static Builder|Movie whereUpdatedAt($value)
+ * @method static Builder|Movie whereYear($value)
+ * @mixin Eloquent
  */
 class Movie extends Model
 {
     protected $fillable = [
-        'title', 'year', 'released', 'runtime', 'plot', 'review', 'poster',
-        'internet_movie_database_rating', 'rotten_tomatoes_rating', 'metacritic_rating', 'imdb_rating', 'slug'
+        'title',
+        'year',
+        'released',
+        'runtime',
+        'plot',
+        'review',
+        'poster',
+        'internet_movie_database_rating',
+        'rotten_tomatoes_rating',
+        'metacritic_rating',
+        'imdb_rating',
+        'slug'
     ];
 
     /**
@@ -99,5 +114,41 @@ class Movie extends Model
     public function genres()
     {
         return $this->belongsToMany(Genre::class);
+    }
+
+    public static function index(array $data): Collection
+    {
+        $orderBy = $data['order_by'] ??= 'released';
+        $orderDir = $data['order_dir'] ??= 'desc';
+
+        $movies = self::query()
+            ->select('id', 'title', 'year', 'poster', 'slug')
+            ->orderBy($orderBy, $orderDir)
+            ->get();
+
+        return $movies;
+    }
+
+    /**
+     * @param  array  $data
+     * @return Collection
+     */
+    public static function search(array $data): Collection
+    {
+        $title = $data['title'] ??= null;
+        $year = $data['year'] ??= null;
+        $orderBy = $data['order_by'] ??= 'released';
+        $orderDir = $data['order_dir'] ??= 'desc';
+
+        $movies = self::query()
+            ->where('title', 'ILIKE', "$title%")
+            ->when($year, function ($query, $year) {
+                $query->where('year', $year);
+            })
+            ->select('id', 'title', 'year', 'poster', 'slug')
+            ->orderBy($orderBy, $orderDir)
+            ->get();
+
+        return $movies;
     }
 }

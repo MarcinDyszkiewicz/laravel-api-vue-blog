@@ -4,6 +4,8 @@ namespace App\Providers;
 
 use App\Observers\UserObserver;
 use App\Models\User;
+use App\Omdb\Omdb;
+use App\Omdb\OmdbApi;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\ServiceProvider;
 
@@ -18,6 +20,7 @@ class AppServiceProvider extends ServiceProvider
     {
         Schema::defaultStringLength(191);
         User::observe(UserObserver::class);
+
     }
 
     /**
@@ -27,6 +30,6 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        //
+
     }
 }

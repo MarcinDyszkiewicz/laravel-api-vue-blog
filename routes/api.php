@@ -36,6 +36,9 @@ Route::get('post/{post}/similar', 'PostController@listSimilar');
 
 //Movies
 Route::get('movie/search-omdb', [MovieController::class, 'searchInOmdb']);
+Route::get('movies/search', [MovieController::class, 'search']);
+Route::get('movies/omdb', [MovieController::class, 'getFromOmdb']);
+Route::post('movies/omdb', [MovieController::class, 'storeFromOmdb']);
 Route::apiResource('movies', MovieController::class)->middleware('cors');
 
 //Actors

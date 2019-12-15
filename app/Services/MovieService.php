@@ -42,6 +42,7 @@ class MovieService
     public function createMovie($data)
     {
         $data = ['requestMovie' => $data];
+        dd($data);
         $omdbMovieData = Arr::get($data, 'omdbMovie');
         $requestMovieData = Arr::get($data, 'requestMovie');
         $title = Arr::get($requestMovieData, 'title') ?? $omdbMovieData['Title'];
@@ -86,9 +87,9 @@ class MovieService
 
         //Directors
         if ($directorsNames) {
-            $directorsNamesArray = explode(', ', $directorsNames);
+//            $directorsNamesArray = explode(', ', $directorsNames);
             $directorIds = [];
-            foreach (array_wrap($directorsNamesArray) as $directorName) {
+            foreach (array_wrap($directorsNames) as $directorName) {
                 $director = Director::where('full_name', $directorName)->first();
                 if (!$director) {
                     $director = Director::create(['full_name' => $directorName]);

@@ -1,4 +1,4 @@
-FROM php:7.4.0RC4-fpm
+FROM php:7.4.0-fpm
 
 RUN apt-get update && apt-get install -y zlib1g-dev -y zip libzip-dev libicu-dev g++ libcurl4-openssl-dev libpng-dev libjpeg-dev libmcrypt-dev less vim libpq-dev libxml2-dev libonig-dev && apt-get clean -y
 RUN docker-php-ext-configure pgsql -with-pgsql=/usr/local/pgsql

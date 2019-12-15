@@ -1,0 +1,32 @@
+<?php
+
+namespace DummyNamespace;
+
+use App\MyFormRequest\Http\MyFormRequest;
+
+class DummyClass extends MyFormRequest
+{
+    /**
+     * Get the validation rules that apply to the request.
+     *
+     * @return array
+     */
+    public function rules()
+    {
+        return [
+            //
+        ];
+    }
+
+//    /**
+//     * Returns allowed form request params
+//     *
+//     * @return array
+//     */
+//    public function allowedParams()
+//    {
+//        return [
+//            //
+//        ];
+//    }
+}

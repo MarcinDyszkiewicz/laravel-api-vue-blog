@@ -21,29 +21,82 @@ class OmdbApi
 
     public function __construct()
     {
-        $this->guzzleClient = new Client();
+        $this->guzzleClient = $this->createClient();
     }
 
     /**
-     * @param string $title
-     * @param string|null $year
+     * @param  string  $title
+     * @param  string|null  $year
      * @return StreamInterface
-     * @throws GuzzleException
      */
-    public function findInOmdb(string $title, ?string $year): StreamInterface
+    public function findInOmdbByTitle(string $title, ?string $year): StreamInterface
     {
-//        $title = Arr::get($data, 'title');
-//        $year = Arr::get($data, 'year');
-
-        $response = $this->guzzleClient->request(self::METHOD_GET, self::OMDB_API_BASE_URL, [
+        $response = $this->guzzleClient->get(null, [
             'query' => [
-                'apikey' => self::API_KEY,
-                'type' => self::TYPE_MOVIE,
                 't' => $title,
                 'y' => $year
             ]
         ]);
 
         return $response->getBody();
+    }
+
+    /**
+     * @param  string  $id
+     * @return array
+     */
+    public function findInOmdbById(string $id): array
+    {
+        $response = $this->guzzleClient->get(self::OMDB_API_BASE_URL, [
+            'query' => [
+                'apikey' => self::API_KEY,
+                'i' => $id,
+            ]
+        ]);
+        $body = $response->getBody();
+
+        return json_decode($body, true);
+    }
+
+
+    /**
+     * @param  string  $title
+     * @param  string|null  $year
+     * @return array|null
+     */
+    public function searchInOmdb(string $title, ?string $year): ?array
+    {
+        $response = $this->guzzleClient->get(self::OMDB_API_BASE_URL, [
+            'query' => [
+                'apikey' => self::API_KEY,
+                'type' => self::TYPE_MOVIE,
+                's' => $title,
+                'y' => $year
+            ]
+        ]);
+        $body = $response->getBody();
+        $decodedBody = json_decode($body, true);
+
+        if ($decodedBody['Response'] === "False") {
+            return [];
+        }
+
+        return $decodedBody['Search'];
+    }
+
+    /**
+     * @return Client
+     */
+    private function createClient()
+    {
+        return new Client([
+            'base_url' => self::OMDB_API_BASE_URL,
+            'defaults' => [
+                'query' => [
+                    'apikey' => self::API_KEY,
+                    'type' => self::TYPE_MOVIE,
+                ]
+            ]
+        ]);
     }
 }
