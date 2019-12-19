@@ -63,6 +63,7 @@ class MovieService
             'rotten_tomatoes_rating' => Arr::get($omdbMovieData, 'Ratings.1.Value'),
             'metacritic_rating' => Arr::get($omdbMovieData, 'Ratings.2.Value'),
             'slug' => Arr::get($requestMovieData, 'slug') ?? str_slug($title . ' ' . $year, '-'),
+            'imdb_id' => Arr::get($requestMovieData, 'imdbID'),
         ]);
 
         //Genres

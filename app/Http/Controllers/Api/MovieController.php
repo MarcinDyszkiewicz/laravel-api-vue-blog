@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Http\Requests\MovieCreateFromOmdbRequest;
 use App\Http\Requests\MovieCreateUpdateRequest;
 use App\Http\Requests\MovieIndexRequest;
 use App\Http\Requests\MovieSearchRequest;
-use App\Http\Requests\MovieSearchRequestold;
 use App\Http\Resources\MovieResourceListing;
 use App\Models\Movie;
 use App\Omdb\Omdb;
@@ -51,7 +51,12 @@ class MovieController
         $dbMovies = Movie::search($allowedParams)->toArray();
         $omdbMovies = $omdb->search($allowedParams);
         $movies = array_merge($dbMovies, $omdbMovies);
-
+        $moviesImdbIds = [];
+//        foreach ($movies as $movie) {
+//            $moviesImdbIds = $movie->imdb_id;
+//        }
+//        $movies = array_unique($movies , SORT_LOCALE_STRING);
+dd($movies);
         return MovieResourceListing::make($movies)->additional(['message' => 'ok', 'success' => true]);
     }
 
@@ -90,10 +95,10 @@ class MovieController
      * @param MovieCreateUpdateRequest $request
      * @return \Illuminate\Http\Response
      */
-    public function storeFromOmdb(Request $request, Omdb $omdb)
+    public function storeFromOmdb(MovieCreateFromOmdbRequest $request, Omdb $omdb)
     {
 //        try {
-            $omdbMovie =  $omdb->findById($request->input('omdb_id'));
+            $omdbMovie = $omdb->findById($request->input('omdb_id'));
             $movie = $this->movieService->createMovie($omdbMovie->toArray());
 
             return response()->json(['data' => $movie, 'message' => 'Movie Saved', 'success' => true ], JsonResponse::HTTP_OK);

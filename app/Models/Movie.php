@@ -61,6 +61,8 @@ use Illuminate\Support\Carbon;
  */
 class Movie extends Model
 {
+    public const LIST_SELECT_COLUMNS = ['id', 'title', 'year', 'poster', 'slug', 'imdb_id'];
+
     protected $fillable = [
         'title',
         'year',
@@ -116,13 +118,17 @@ class Movie extends Model
         return $this->belongsToMany(Genre::class);
     }
 
+    /**
+     * @param  array  $data
+     * @return Collection
+     */
     public static function index(array $data): Collection
     {
         $orderBy = $data['order_by'] ??= 'released';
         $orderDir = $data['order_dir'] ??= 'desc';
 
         $movies = self::query()
-            ->select('id', 'title', 'year', 'poster', 'slug')
+            ->select(self::LIST_SELECT_COLUMNS)
             ->orderBy($orderBy, $orderDir)
             ->get();
 
@@ -145,7 +151,7 @@ class Movie extends Model
             ->when($year, function ($query, $year) {
                 $query->where('year', $year);
             })
-            ->select('id', 'title', 'year', 'poster', 'slug')
+            ->select(self::LIST_SELECT_COLUMNS)
             ->orderBy($orderBy, $orderDir)
             ->get();
 

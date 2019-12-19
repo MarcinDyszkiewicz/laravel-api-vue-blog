@@ -47,7 +47,7 @@ class Omdb
         $responseMovies = $this->omdbApi->searchInOmdb($title, $year);
         $omdbMovies = [];
         foreach ($responseMovies as $responseMovie) {
-            $omdbMovies[] = new OmdbMovieReduced($responseMovie);
+            $omdbMovies[] = (new OmdbMovieReduced($responseMovie))->toArray();
         }
 
         return $omdbMovies;

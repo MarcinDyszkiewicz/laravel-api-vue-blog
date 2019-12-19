@@ -8,17 +8,17 @@ use Illuminate\Support\Arr;
 class OmdbMovie
 {
     public string $title;
-    public string $year;
+    public int $year;
     public string $rated;
     public \DateTime $released;
-    public string $runtime;
-    public string $genre;
+    public int $runtime;
+    public array $genre;
     public array $directors;
     public array $writers;
     public array $actors;
     public string $plot;
     public array $languages;
-    public array $countrys;
+    public array $countries;
     public string $awards;
     public string $poster;
     public array $ratings;
@@ -38,13 +38,13 @@ class OmdbMovie
         $this->rated = Arr::get($data, 'Rated');
         $this->released = $this->parseToCarbonDateTime(Arr::get($data, 'Released'));
         $this->runtime = (int) Arr::get($data, 'Runtime');
-        $this->genre = Arr::get($data, 'Genre');
+        $this->genre = $this->parseToArray(Arr::get($data, 'Genre'));
         $this->directors = $this->parseToArray(Arr::get($data, 'Director'));
         $this->writers = $this->parseToArray(Arr::get($data, 'Writer'));
         $this->actors = $this->parseToArray(Arr::get($data, 'Actors'));
         $this->plot = Arr::get($data, 'Plot');
         $this->languages = $this->parseToArray(Arr::get($data, 'Language'));
-        $this->countrys = $this->parseToArray(Arr::get($data, 'Country'));
+        $this->countries = $this->parseToArray(Arr::get($data, 'Country'));
         $this->awards = Arr::get($data, 'Awards');
         $this->poster = Arr::get($data, 'Poster');
         $this->ratings = Arr::get($data, 'Ratings');

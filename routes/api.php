@@ -1,8 +1,10 @@
 <?php
 
 use App\Http\Controllers\ActorController;
+use App\Http\Controllers\Api\CommentController;
 use App\Http\Controllers\Api\MovieController;
 use App\Http\Controllers\Api\PostController;
+use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DirectorController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -25,26 +27,28 @@ use Illuminate\Support\Facades\Route;
 
 //Route::post('oauth/token', 'Laravel\Passport\Http\Controllers\AccessTokenController@issueToken')->middleware('');
 //Homepage
-Route::get('post/list/homepage', 'PostController@listHomepage');
-Route::get('post/hot/category', 'PostController@listHotCategory');
-Route::get('post/category/{category_name}', 'PostController@listForCategory');
+Route::get('post/list/homepage', [PostController::class, 'listHomepage']);
+Route::get('post/hot/category', [PostController::class, 'listHotCategory']);
+Route::get('post/category/{category_name}', [PostController::class, 'listForCategory']);
 
 //Posts
 Route::apiResource('post', PostController::class)->only('index', 'show');
-Route::get('post/{post}/comments', 'CommentController@commentsForPost');
-Route::get('post/{post}/similar', 'PostController@listSimilar');
+Route::get('post/{post}/comments', [CommentController::class ,'commentsForPost']);
+Route::get('post/{post}/similar', [PostController::class, 'listSimilar']);
 
 //Movies
 Route::get('movie/search-omdb', [MovieController::class, 'searchInOmdb']);
-Route::get('movies/search', [MovieController::class, 'search']);
+Route::get('movies/search', [MovieController::class, 'search'])->name('movies.search');
 Route::get('movies/omdb', [MovieController::class, 'getFromOmdb']);
 Route::post('movies/omdb', [MovieController::class, 'storeFromOmdb']);
 Route::apiResource('movies', MovieController::class)->middleware('cors');
+Route::get('movies/{movie}/comments', [CommentController::class ,'commentsForMovie']);
+Route::get('movies/{movie}/rating', [MovieController::class, 'calculateRating']);
 
 //Actors
 Route::apiResource('actor', ActorController::class);
-Route::post('actor/{actor}/rate', 'ActorController@rate');
-Route::get('actor/{actor}/movie/{movie}/rating', 'ActorController@calculateForMovieRating');
+//Route::post('actor/{actor}/rate', 'ActorController@rate');
+//Route::get('actor/{actor}/movie/{movie}/rating', 'ActorController@calculateForMovieRating');
 Route::post('actor/{actor}/movie/{movie}/rate', [ActorController::class, 'rateForMovie']);
 
 
@@ -56,8 +60,8 @@ Route::apiResource('director', DirectorController::class);
 //Route::group([
 //    'prefix' => 'auth'
 //], function () {
-//    Route::post('login', 'AuthController@login');
-//    Route::post('signup', 'AuthController@signup');
+    Route::post('login', [AuthController::class, 'login']);
+    Route::post('signup', [AuthController::class, 'signup']);
 //
 
 

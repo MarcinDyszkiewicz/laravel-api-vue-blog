@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Api;
 
+use App\Http\Controllers\Controller;
 use App\Http\Requests\CommentCreateUpdateRequest;
 use App\Http\Resources\CommentResource;
 use App\Http\Resources\CommentResourceListing;
@@ -104,6 +105,7 @@ class CommentController extends Controller
      */
     public function commentsForMovie(Movie $movie)
     {
+
         $comments = $movie->comments;
 
         return CommentResourceListing::collection($comments)->additional(['message' => 'ok', 'success' => true]);
