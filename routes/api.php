@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\ActorController;
 use App\Http\Controllers\Api\CommentController;
+use App\Http\Controllers\Api\GenreController;
 use App\Http\Controllers\Api\MovieController;
 use App\Http\Controllers\Api\PostController;
 use App\Http\Controllers\AuthController;
@@ -51,6 +52,14 @@ Route::apiResource('actor', ActorController::class);
 //Route::get('actor/{actor}/movie/{movie}/rating', 'ActorController@calculateForMovieRating');
 Route::post('actor/{actor}/movie/{movie}/rate', [ActorController::class, 'rateForMovie']);
 
+//Genres
+Route::apiResource('genres', GenreController::class);
+//Route::apiResource('genre', 'GenreController')->only('index', 'show');
+//Route::apiResource('genre', 'GenreController')->only('store', 'update', 'delete')->middleware('can:manage,App/Model/Genre');
+
+//Tags
+Route::apiResource('tag', 'TagController')->only('index', 'show');
+Route::apiResource('tag', 'TagController')->only('store', 'update', 'delete')->middleware('can:manage,App/Model/Tag');
 
 Route::apiResource('director', DirectorController::class);
 
