@@ -24,7 +24,7 @@ class MovieSearchRequest extends MyFormRequest
      *
      * @return array
      */
-    public function allowedParams()
+    public function allowedParams(): array
     {
         return [
             'title',

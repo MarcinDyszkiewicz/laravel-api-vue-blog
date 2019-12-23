@@ -75,7 +75,8 @@ class Movie extends Model
         'rotten_tomatoes_rating',
         'metacritic_rating',
         'imdb_rating',
-        'slug'
+        'slug',
+        'imdb_id'
     ];
 
     /**
@@ -147,7 +148,7 @@ class Movie extends Model
         $orderDir = $data['order_dir'] ??= 'desc';
 
         $movies = self::query()
-            ->where('title', 'ILIKE', "$title%")
+            ->where('title', 'ILIKE', "%$title%")
             ->when($year, function ($query, $year) {
                 $query->where('year', $year);
             })

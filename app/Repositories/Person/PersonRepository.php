@@ -11,84 +11,108 @@ use Illuminate\Validation\ValidationException;
 class PersonRepository extends BaseRepository
 {
     /**
-     * @return Model
-     * @throws ValidationException
+     * @var Model
      */
-    public function create(): Model
+    protected Model $model;
+
+    public function __construct(Model $model)
     {
-        $this->validate();
-
-        $this->model = $this->model->create($this->parseParameters());
-
-        $this->attachToMovie();
-
-        return $this->model;
+        $this->model = $model;
     }
 
     /**
+     * @param  array  $parameters
      * @return Model
      * @throws ValidationException
      */
-    public function update(): Model
+    public function create(array $parameters): Model
     {
-        $this->validate();
+        $this->validate($parameters);
 
-        $this->model->update($this->parseParameters());
+        $model = $this->model->create($this->parseParameters($parameters));
 
-        $this->syncWithMovie();
+        $this->attachToMovie($model, $parameters['movie_ids']);
 
-        return $this->model;
+        return $model;
     }
 
     /**
+     * @param  Model  $model
+     * @param  array  $parameters
+     * @return Model
+     * @throws ValidationException
+     */
+    public function update(Model $model, array $parameters): Model
+    {
+        $this->validate($parameters);
+
+        $model->update($this->parseParameters($parameters));
+
+        $this->syncWithMovie($model, $parameters['movie_ids']);
+
+        return $model;
+    }
+
+    /**
+     * @param  Model  $model
      * @return bool|null
      * @throws \Exception
      */
-    public function delete(): ?bool
+    public function delete(Model $model): ?bool
     {
-        return $this->model->delete();
+        return $model->delete();
     }
 
-    public function attachToMovie(): void
+    /**
+     * @param  Model  $model
+     * @param  array  $movieIds
+     */
+    public function attachToMovie(Model $model, array $movieIds): void
     {
-        if (isset($this->parameters['movie_ids'])) {
-            $this->model->movies()->attach($this->parameters['movie_ids']);
+        if (filled($movieIds)) {
+            $model->movies()->attach($movieIds);
         }
     }
 
     /**
+     * @param  array  $parameters
      * @return array
      */
-    protected function parseParameters(): array
+    protected function parseParameters(array $parameters): array
     {
-        $fullName = Arr::get($this->parameters, 'full_name');
-        $slug = Arr::get($this->parameters, 'slug');
+        $fullName = Arr::get($parameters, 'full_name');
+        $slug = Arr::get($parameters, 'slug');
         return [
             'full_name' => $fullName,
-            'poster' => Arr::get($this->parameters, 'poster'),
+            'poster' => Arr::get($parameters, 'poster'),
             'slug' => $slug ?? Str::slug($fullName, '-'),
         ];
     }
 
     /**
+     * @param  array  $params
      * @return array
      */
-    protected function validationRules(): array
+    protected function validationRules(array $params = []): array
     {
         $modelTable = $this->model->getTable();
         return [
             'full_name' =>
                 "required|string|unique:{$modelTable},full_name|regex:/(?=^.{5,50}$)^[a-zA-Z-]+\s[a-zA-Z-]+$/",
             'poster' => 'nullable|string|url',
-            'movie_ids' => 'array',
+            'movie_ids' => 'present|array',
             'movie_ids.*' => 'nullable|integer|exists:movies,id'
         ];
     }
 
-    private function syncWithMovie(): void
+    /**
+     * @param  Model  $model
+     * @param  array  $movieIds
+     */
+    private function syncWithMovie(Model $model, array $movieIds): void
     {
-        if (isset($this->parameters['movie_ids'])) {
-            $this->model->movies()->sync($this->parameters['movie_ids']);
+        if (filled($movieIds)) {
+            $model->movies()->sync($movieIds);
         }
     }
 }

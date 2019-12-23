@@ -6,13 +6,19 @@ use App\Http\Requests\MovieCreateFromOmdbRequest;
 use App\Http\Requests\MovieCreateUpdateRequest;
 use App\Http\Requests\MovieIndexRequest;
 use App\Http\Requests\MovieSearchRequest;
+use App\Http\Resources\MovieResource;
 use App\Http\Resources\MovieResourceListing;
+use App\Http\Responses\ExceptionResponse;
+use App\Http\Responses\MyJsonResponse;
+use App\Http\Responses\ValidationExceptionResponse;
 use App\Models\Movie;
 use App\Omdb\Omdb;
+use App\Repositories\Movie\MovieRepositoryInterface;
 use App\Services\MovieService;
 use GuzzleHttp\Exception\GuzzleException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Validation\ValidationException;
 
 class MovieController
 {
@@ -20,7 +26,7 @@ class MovieController
 
     /**
      * MovieController constructor.
-     * @param MovieService $movieService
+     * @param  MovieService  $movieService
      */
     public function __construct(MovieService $movieService)
     {
@@ -30,34 +36,39 @@ class MovieController
     /**
      * Display a listing of the resource.
      *
-     * @param MovieIndexRequest $request
-     * @return MovieResourceListing
+     * @param  MovieIndexRequest  $request
+     * @return MovieResourceListing|ExceptionResponse
      */
     public function index(MovieIndexRequest $request)
     {
-        $movies = Movie::index($request->onlyAllowedParams());
+        try {
+            $movies = Movie::index($request->onlyAllowedParams());
 
-        return MovieResourceListing::make($movies)->additional(['message' => 'ok', 'success' => true]);
+            return MovieResourceListing::make($movies)->additional(['message' => 'ok', 'success' => true]);
+        } catch (\Exception $e) {
+            return (new ExceptionResponse($e));
+        }
     }
 
     /**
-     * @param MovieSearchRequest $request
-     * @param Omdb $omdb
-     * @return MovieResourceListing
+     * @param  MovieSearchRequest  $request
+     * @param  MovieService  $movieService
+     * @param  Omdb  $omdb
+     * @return MovieResourceListing|ExceptionResponse
      */
-    public function search(MovieSearchRequest $request, Omdb $omdb)
+    public function search(MovieSearchRequest $request, MovieService $movieService, Omdb $omdb)
     {
-        $allowedParams = $request->onlyAllowedParams();
-        $dbMovies = Movie::search($allowedParams)->toArray();
-        $omdbMovies = $omdb->search($allowedParams);
-        $movies = array_merge($dbMovies, $omdbMovies);
-        $moviesImdbIds = [];
-//        foreach ($movies as $movie) {
-//            $moviesImdbIds = $movie->imdb_id;
-//        }
-//        $movies = array_unique($movies , SORT_LOCALE_STRING);
-dd($movies);
-        return MovieResourceListing::make($movies)->additional(['message' => 'ok', 'success' => true]);
+        try {
+            $allowedParams = $request->onlyAllowedParams();
+            $dbMovies = Movie::search($allowedParams)->toArray();
+            $omdbMovies = $omdb->search($allowedParams);
+            $movies = array_merge($dbMovies, $omdbMovies);
+            $movies = $movieService->uniqueMoviesByImdbId($movies);
+
+            return MovieResourceListing::make($movies)->additional(['message' => 'ok', 'success' => true]);
+        } catch (\Exception $e) {
+            return (new ExceptionResponse($e));
+        }
     }
 
     /**
@@ -67,59 +78,74 @@ dd($movies);
      */
     public function getFromOmdb(Request $request, Omdb $omdb)
     {
-        $movie =  $omdb->findById($request->input('omdb_id'));
-
-        return response()->json($movie, JsonResponse::HTTP_OK);
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param MovieCreateUpdateRequest $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(MovieCreateUpdateRequest $request)
-    {
         try {
-            $movie = $this->movieService->createMovie($request->all());
+            $movie = $omdb->findById($request->input('omdb_id'));
 
-            return response()->json(['data' => $movie, 'message' => 'Movie Saved', 'success' => true ], JsonResponse::HTTP_OK);
+            return new MyJsonResponse($movie);
         } catch (\Exception $e) {
-            return response()->json(['data' => null, 'message' => $e->getMessage(), 'success' => false ], JsonResponse::HTTP_BAD_REQUEST);
+            return (new ExceptionResponse($e));
         }
     }
 
     /**
      * Store a newly created resource in storage.
      *
-     * @param MovieCreateUpdateRequest $request
-     * @return \Illuminate\Http\Response
+     * @param  MovieCreateUpdateRequest  $request
+     * @param  MovieRepositoryInterface  $movieRepository
+     * @return MovieResource|JsonResponse
+     * @throws ValidationException
      */
-    public function storeFromOmdb(MovieCreateFromOmdbRequest $request, Omdb $omdb)
+    public function store(MovieCreateUpdateRequest $request, MovieRepositoryInterface $movieRepository)
     {
-//        try {
-            $omdbMovie = $omdb->findById($request->input('omdb_id'));
-            $movie = $this->movieService->createMovie($omdbMovie->toArray());
+        try {
+            $movie = $movieRepository->create($request->onlyAllowedParams());
 
-            return response()->json(['data' => $movie, 'message' => 'Movie Saved', 'success' => true ], JsonResponse::HTTP_OK);
-//        } catch (\Exception $e) {
-//            return response()->json(['data' => null, 'message' => $e->getMessage(), 'success' => false ], JsonResponse::HTTP_BAD_REQUEST);
-//        }
+            return MovieResource::make($movie)->additional(['message' => 'Movie Saved', 'success' => true]);
+        } catch (ValidationException $e) {
+            return new ValidationExceptionResponse($e);
+        } catch (\Exception $e) {
+            return new ExceptionResponse($e);
+        }
+    }
+
+    /**
+     * Store a newly created resource in storage.
+     *
+     * @param  MovieCreateFromOmdbRequest  $request
+     * @param  MovieRepositoryInterface  $movieRepository
+     * @param  Omdb  $omdb
+     * @return MovieResource|JsonResponse
+     */
+    public function storeFromOmdb(
+        MovieCreateFromOmdbRequest $request,
+        MovieRepositoryInterface $movieRepository,
+        Omdb $omdb
+    ) {
+        try {
+            $omdbMovie = $omdb->findById($request->input('omdb_id', ''));
+            $movie = $movieRepository->create($omdbMovie->toArray());
+
+            return MovieResource::make($movie)->additional(['message' => 'Movie Saved', 'success' => true]);
+        } catch (ValidationException $e) {
+            return new ValidationExceptionResponse($e);
+        } catch (\Exception $e) {
+            return new ExceptionResponse($e);
+        }
     }
 
     /**
      * Display the specified resource.
      *
-     * @param Movie $movie
-     * @return JsonResponse
+     * @param  Movie  $movie
+     * @return MovieResource
      */
     public function show(Movie $movie)
     {
-        return response()->json(['data' => $movie], JsonResponse::HTTP_OK);
+        return MovieResource::make($movie->load(['genres', 'actors', 'directors']))->additional(['message' => 'Ok', 'success' => true]);
     }
 
     /**
-     * @param Request $request
+     * @param  Request  $request
      * @return \Psr\Http\Message\StreamInterface
      * @throws GuzzleException
      */
@@ -133,26 +159,40 @@ dd($movies);
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request $request
-     * @param Movie $movie
-     * @return Movie
+     * @param  MovieCreateUpdateRequest  $request
+     * @param  Movie  $movie
+     * @param  MovieRepositoryInterface  $movieRepository
+     * @return MovieResource|ExceptionResponse|ValidationExceptionResponse
      */
-    public function update(Request $request, Movie $movie)
+    public function update(MovieCreateUpdateRequest $request, Movie $movie, MovieRepositoryInterface $movieRepository)
     {
-        $movie = $this->movieService->updateMovie($request->all(), $movie);
+        try {
+            $movie = $movieRepository->update($movie, $request->onlyAllowedParams());
 
-        return $movie;
+            return MovieResource::make($movie)->additional(['message' => 'Movie Updated', 'success' => true]);
+        } catch (ValidationException $e) {
+            return new ValidationExceptionResponse($e);
+        } catch (\Exception $e) {
+            return (new ExceptionResponse($e));
+        }
     }
 
     /**
      * Remove the specified resource from storage.
      *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @param  Movie  $movie
+     * @param  MovieRepositoryInterface  $movieRepository
+     * @return MovieResource|ExceptionResponse|MyJsonResponse
      */
-    public function destroy($id)
+    public function destroy(Movie $movie, MovieRepositoryInterface $movieRepository)
     {
-        //
+        try {
+            $deleted = $movieRepository->delete($movie);
+
+            return new MyJsonResponse($deleted, true, 'Movie Delete');
+        } catch (\Exception $e) {
+            return (new ExceptionResponse($e));
+        }
     }
 
     public function searchMovie()
@@ -161,7 +201,7 @@ dd($movies);
     }
 
     /**
-     * @param Request $request
+     * @param  Request  $request
      * @return \Illuminate\Http\JsonResponse|\Psr\Http\Message\StreamInterface
      * @throws \GuzzleHttp\Exception\GuzzleException
      */

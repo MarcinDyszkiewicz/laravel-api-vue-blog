@@ -2,6 +2,8 @@
 
 namespace App\Providers;
 
+use App\Repositories\Movie\MovieRepository;
+use App\Repositories\Movie\MovieRepositoryInterface;
 use Illuminate\Support\ServiceProvider;
 
 class InterfaceServiceProvider extends ServiceProvider
@@ -13,6 +15,6 @@ class InterfaceServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        $this->app->bind('App\Helpers\UserControllerHelper');
+        $this->app->bind(MovieRepositoryInterface::class, MovieRepository::class);
     }
 }

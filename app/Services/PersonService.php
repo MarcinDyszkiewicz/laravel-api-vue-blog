@@ -22,9 +22,9 @@ class PersonService
     public function createActor(array $data): Model
     {
 //        try {
-            $personFactory = new PersonRepository(new Actor(), $data);
+            $personFactory = new PersonRepository(new Actor());
 
-            return $personFactory->create();
+            return $personFactory->create($data);
 //        } catch (ValidationException $exception) {
 //            abort(400, $exception->getMessage());
 //        }

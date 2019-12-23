@@ -6,9 +6,22 @@ use Illuminate\Database\Eloquent\Model;
 
 interface BaseRepositoryInterface
 {
-    public function create(): Model;
+    /**
+     * @param  array  $parameters
+     * @return Model
+     */
+    public function create(array $parameters): Model;
 
-    public function update(): Model;
+    /**
+     * @param  Model  $model
+     * @param  array  $parameters
+     * @return Model
+     */
+    public function update(Model $model, array $parameters): Model;
 
-    public function validate(): bool;
+    /**
+     * @param  array  $parameters
+     * @return bool
+     */
+    public function validate(array $parameters): bool;
 }

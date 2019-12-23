@@ -42,37 +42,39 @@ class MovieService
     public function createMovie($data)
     {
         $data = ['requestMovie' => $data];
-        dd($data);
         $omdbMovieData = Arr::get($data, 'omdbMovie');
         $requestMovieData = Arr::get($data, 'requestMovie');
-        $title = Arr::get($requestMovieData, 'title') ?? $omdbMovieData['Title'];
-        $year = Arr::get($requestMovieData, 'year') ?? $omdbMovieData['Year'];
-        $genresIds = Arr::get($requestMovieData, 'genresIds');
-        $actorsNames = Arr::get($requestMovieData, 'actors') ?? $omdbMovieData['Actors'];
-        $directorsNames = Arr::get($requestMovieData, 'director') ?? $omdbMovieData['Director'];
+        $title = Arr::get($requestMovieData, 'title');
+        $year = Arr::get($requestMovieData, 'year');
+        $genresIds = Arr::get($requestMovieData, 'genre_ids');
+        $actorsNames = Arr::get($requestMovieData, 'actors');
+        $directorsNames = Arr::get($requestMovieData, 'directors');
 
         $movie = Movie::create([
             'title' => $title,
             'year' => $year,
-            'released' => Carbon::createFromFormat('j M Y', Arr::get($requestMovieData, 'released')) ?? Carbon::createFromFormat('j M Y', $omdbMovieData['Released']),
-            'runtime' => Arr::get($requestMovieData, 'runtime') ?? substr($omdbMovieData['Runtime'], 0, strpos($omdbMovieData['Runtime'], ' min')),
-            'plot' => Arr::get($requestMovieData, 'plot') ?? $omdbMovieData['Plot'],
+            'released' => Carbon::createFromFormat('j M Y', Arr::get($requestMovieData, 'released')),
+            'runtime' => Arr::get($requestMovieData, 'runtime'),
+            'plot' => Arr::get($requestMovieData, 'plot'),
             'review' => Arr::get($requestMovieData, 'review'),
-            'poster' => Arr::get($requestMovieData, 'poster') ?? $omdbMovieData['Poster'],
+            'poster' => Arr::get($requestMovieData, 'poster'),
             'internet_movie_database_rating' => Arr::get($omdbMovieData, 'Ratings.0.Value'),
             'rotten_tomatoes_rating' => Arr::get($omdbMovieData, 'Ratings.1.Value'),
             'metacritic_rating' => Arr::get($omdbMovieData, 'Ratings.2.Value'),
             'slug' => Arr::get($requestMovieData, 'slug') ?? str_slug($title . ' ' . $year, '-'),
-            'imdb_id' => Arr::get($requestMovieData, 'imdbID'),
+            'imdb_id' => Arr::get($requestMovieData, 'imdb_id'),
         ]);
 
         //Genres
         if ($genresIds) {
-            $movie->genres()->sync(array_wrap($genresIds));
+            $movie->genres()->attach($genresIds);
         }
 
         //Actors
         if ($actorsNames) {
+
+
+
 //            $actorsNamesArray = explode(', ', $actorsNames);
             $actorIds = [];
             foreach ($actorsNames as $actorName) {
@@ -219,5 +221,23 @@ class MovieService
         $ratings = $movie->ratings()->avg('rate');
 
         return round($ratings, 2);
+    }
+
+    /**
+     * @param  array $movies
+     * @return array
+     */
+    public function uniqueMoviesByImdbId(array $movies)
+    {
+        $moviesImdbIds = [];
+        foreach ($movies as $key => $movie) {
+            if (in_array($movie['imdb_id'], $moviesImdbIds)) {
+                unset($movies[$key]);
+            } else {
+                $moviesImdbIds[] = $movie['imdb_id'];
+            }
+        }
+
+        return $movies;
     }
 }

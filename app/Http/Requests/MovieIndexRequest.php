@@ -22,7 +22,7 @@ class MovieIndexRequest extends MyFormRequest
     /**
      * @return array
      */
-    public function allowedParams()
+    public function allowedParams(): array
     {
         return [
             'order_by',

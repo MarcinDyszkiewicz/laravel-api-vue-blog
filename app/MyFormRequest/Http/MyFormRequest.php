@@ -12,18 +12,15 @@ class MyFormRequest extends FormRequest
     /**
      * @return array
      */
-    public function allowedParams()
+    public function allowedParams(): array
     {
-        if (!method_exists($this, 'allowedParams')) {
-            return array_keys($this->container->call([$this, 'rules']));
-        }
-        return [];
+        return array_keys($this->container->call([$this, 'rules']));
     }
 
     /**
      * @return array
      */
-    public function onlyAllowedParams()
+    public function onlyAllowedParams(): array
     {
         return $this->only($this->allowedParams());
     }
@@ -50,6 +47,7 @@ class MyFormRequest extends FormRequest
     {
         return response()->json(
             [
+                'data' => null,
                 'message' => 'The given data was invalid.',
                 'errors' => $this->validator->errors()->messages(),
                 'success' => false

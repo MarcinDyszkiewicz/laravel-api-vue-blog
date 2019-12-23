@@ -8,45 +8,48 @@ use Illuminate\Validation\ValidationException;
 
 abstract class BaseRepository implements BaseRepositoryInterface
 {
-    /**
-     * @var Model
-     */
-    protected Model $model;
-    /**
-     * @var array
-     */
-    protected array $parameters;
+//    /**
+//     * @var Model
+//     */
+//    protected Model $model;
+//    /**
+//     * @var array
+//     */
+//    protected array $parameters;
+//
+//    public function __construct(Model $model, array $parameters = [])
+//    {
+//        $this->model = $model;
+//        $this->parameters = $parameters;
+//    }
 
-    public function __construct(Model $model, array $parameters = [])
-    {
-        $this->model = $model;
-        $this->parameters = $parameters;
-    }
-
     /**
+     * @param  array  $parameters
      * @return Model
-     * @throws ValidationException
      */
-    abstract public function create(): Model;
+    abstract public function create(array $parameters): Model;
 
     /**
+     * @param  Model  $model
+     * @param  array  $parameters
      * @return Model
-     * @throws ValidationException
      */
-    abstract public function update(): Model;
+    abstract public function update(Model $model, array $parameters): Model;
 
     /**
+     * @param  Model  $model
      * @return bool|null
      */
-    abstract public function delete(): ?bool;
+    abstract public function delete(Model $model): ?bool;
 
     /**
+     * @param  array  $parameters
      * @return bool
      * @throws ValidationException
      */
-    public function validate(): bool
+    public function validate(array $parameters): bool
     {
-        $validator = Validator::make($this->parameters, $this->validationRules());
+        $validator = Validator::make($parameters, $this->validationRules($parameters));
 
         if ($validator->fails()) {
             throw new ValidationException($validator, $validator->getMessageBag(), $validator->errors());
@@ -56,12 +59,14 @@ abstract class BaseRepository implements BaseRepositoryInterface
     }
 
     /**
+     * @param  array  $parameters
      * @return array
      */
-    abstract protected function parseParameters(): array;
+    abstract protected function parseParameters(array $parameters): array;
 
     /**
+     * @param  array  $parameters
      * @return array
      */
-    abstract protected function validationRules(): array;
+    abstract protected function validationRules(array $parameters = []): array;
 }

@@ -39,7 +39,7 @@ Route::get('post/{post}/similar', [PostController::class, 'listSimilar']);
 //Movies
 Route::get('movie/search-omdb', [MovieController::class, 'searchInOmdb']);
 Route::get('movies/search', [MovieController::class, 'search'])->name('movies.search');
-Route::get('movies/omdb', [MovieController::class, 'getFromOmdb']);
+Route::get('movies/omdb', [MovieController::class, 'getFromOmdb'])->name('movies.get-from-omdb');
 Route::post('movies/omdb', [MovieController::class, 'storeFromOmdb']);
 Route::apiResource('movies', MovieController::class)->middleware('cors');
 Route::get('movies/{movie}/comments', [CommentController::class ,'commentsForMovie']);
