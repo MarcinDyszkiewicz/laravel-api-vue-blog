@@ -4,18 +4,26 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Genre;
+use App\Repositories\Genre\GenreRepositoryInterface;
 use Illuminate\Http\Request;
 
 class GenreController extends Controller
 {
+    private GenreRepositoryInterface $genreRepository;
+
+    public function __construct(GenreRepositoryInterface $genreRepository)
+    {
+        $this->genreRepository = $genreRepository;
+    }
+
     /**
      * Display a listing of the resource.
      *
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\JsonResponse
      */
-    public function index()
+    public function index(Request $request)
     {
-        $genres = Genre::all();
+        $genres = $this->genreRepository->listWithMovies($request->all());
 
         return response()->json($genres);
     }
@@ -28,7 +36,7 @@ class GenreController extends Controller
      */
     public function store(Request $request)
     {
-        $genre = Genre::create(['name' => $request->name]);
+        $genre = $this->genreRepository->create($request->all());
 
         return response()->json($genre);
     }
@@ -54,7 +62,7 @@ class GenreController extends Controller
      */
     public function update(Request $request, Genre $genre)
     {
-        $genre->update(['name' => $request->name]);
+        $this->genreRepository->update($request->all());
 
         return response()->json($genre);
     }

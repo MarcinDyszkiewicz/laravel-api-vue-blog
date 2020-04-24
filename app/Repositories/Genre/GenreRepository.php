@@ -4,10 +4,16 @@ namespace App\Repositories\Genre;
 
 use App\Models\Genre;
 use App\Repositories\BaseRepository;
+use App\Repositories\GenreInterface\GenreRepositoryInterface;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Validation\ValidationException;
 
-class GenreRepository extends BaseRepository
+class GenreRepository extends BaseRepository implements GenreRepositoryInterface
 {
+    /**
+     * @param array $parameters
+     * @return \Illuminate\Database\Eloquent\Collection
+     */
     public function listWithMovies(array $parameters)
     {
         return Genre::with('movies')->get();
@@ -15,7 +21,7 @@ class GenreRepository extends BaseRepository
 
     /**
      * @inheritDoc
-     * @throws \Illuminate\Validation\ValidationException
+     * @throws ValidationException
      */
     public function create(array $parameters): Genre
     {
@@ -28,12 +34,13 @@ class GenreRepository extends BaseRepository
 
     /**
      * @inheritDoc
-     * @throws \Illuminate\Validation\ValidationException
+     * @throws ValidationException
      */
     public function update($genre, array $parameters): Genre
     {
         $this->validate($parameters);
 
+        /** @var Genre $genre */
         $genre->update($this->parseParameters($parameters));
 
         return $genre;
@@ -53,7 +60,9 @@ class GenreRepository extends BaseRepository
      */
     protected function parseParameters(array $parameters): array
     {
-        // TODO: Implement parseParameters() method.
+        $parameters['slug'] ??= str_slug($parameters['name']);
+
+        return $parameters;
     }
 
     /**
@@ -61,6 +70,9 @@ class GenreRepository extends BaseRepository
      */
     protected function validationRules(array $parameters = []): array
     {
-        // TODO: Implement validationRules() method.
+        return [
+            'name' => 'required|string|max:255|unique:genres,name',
+            'slug' => 'nullable|string|max:255|unique:genres,slug',
+        ];
     }
 }
